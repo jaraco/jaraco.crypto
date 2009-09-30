@@ -54,7 +54,7 @@ class Digest:
         if result != 1 :
             raise DigestError, "Unable to finalize digest"
         self.digest_finalized = True
-        return self.digest_out.value[:length.value]
+        return self.digest_out.raw[:length.value]
 
     def _clean_ctx(self):
         try:
