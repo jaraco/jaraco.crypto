@@ -23,6 +23,8 @@
 # All disclaimers of warranty from the original module also
 # apply to these changes.
 
+from __future__ import print_function
+
 """
 Blowfish Encryption
 
@@ -552,29 +554,29 @@ if __name__ == '__main__':
     key = 'This is a test key'
     cipher = Blowfish (key)
 
-    print "Testing encryption:"
+    print("Testing encryption:")
     xl = 123456
     xr = 654321
-    print "\tPlain text: (%s, %s)" %(xl, xr)
+    print("\tPlain text: (%s, %s)" %(xl, xr))
     cl, cr = cipher.cipher (xl, xr, cipher.ENCRYPT)
-    print "\tCrypted is: (%s, %s)" %(cl, cr)
+    print("\tCrypted is: (%s, %s)" %(cl, cr))
     dl, dr = cipher.cipher (cl, cr, cipher.DECRYPT)
-    print "\tUnencrypted is: (%s, %s)" %(dl, dr)
+    print("\tUnencrypted is: (%s, %s)" %(dl, dr))
 
-    print "Testing block encrypt:"
+    print("Testing block encrypt:")
     text = 'testtest'
-    print "\tText:\t\t%s" %text
+    print("\tText:\t\t%s" %text)
     crypted = cipher.encrypt (text)
-    print "\tEncrypted:\t%s" %crypted
+    print("\tEncrypted:\t%s" %crypted)
     decrypted = cipher.decrypt (crypted)
-    print "\tDecrypted:\t%s" %decrypted
+    print("\tDecrypted:\t%s" %decrypted)
     
-    print "Testing CTR encrypt:"
+    print("Testing CTR encrypt:")
     cipher.initCTR()
     text = "The quick brown fox jumps over the lazy dog"
-    print "\tText:\t\t", text
+    print("\tText:\t\t", text)
     crypted = cipher.encryptCTR(text)
-    print "\tEncrypted:\t", crypted
+    print("\tEncrypted:\t", crypted)
     cipher.initCTR()
     decrypted = cipher.decryptCTR(crypted)
-    print "\tDecrypted:\t", decrypted
+    print("\tDecrypted:\t", decrypted)
