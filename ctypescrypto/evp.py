@@ -1,3 +1,4 @@
+import itertools
 from ctypes import *
 
 from .support import find_library
@@ -116,6 +117,41 @@ _cipher_fields = [
 	('ctrl', c_void_p),
 	('app_data', c_void_p),
 ]
+
+MAX_IV_LENGTH = 16
+MAX_BLOCK_LENGTH = 32
+MAX_KEY_LENGTH = 32
+
+_cipher_context_fields = [
+	('cipher', c_void_p), # POINTER(CipherType)
+	('engine', c_void_p), # POINTER(ENGINE)
+	('encrypt', c_int),
+	('buf_len', c_int),
+	('oiv', c_char*MAX_IV_LENGTH),
+	('iv', c_char*MAX_IV_LENGTH),
+	('buf', c_char*MAX_BLOCK_LENGTH),
+	('num', c_int),
+	('app_data', c_void_p),
+	('key_len', c_int),
+	('flags', c_ulong),
+	('cipher_data', c_void_p),
+	('final_used', c_int),
+	('block_mask', c_int),
+	('final', c_char*MAX_BLOCK_LENGTH),
+]
+
+#EncryptInit_ex = lib.EVP_EncryptInit_ex
+#DecryptInit_ex = lib.EVP_DecryptInit_ex
+#...
+for ed, method in itertools.product(
+	['Encrypt', 'Decrypt', 'Cipher'],
+	['Init_ex', 'Update', 'Final_ex'],
+	):
+	local_name = ''.join([ed, method])
+	lib_name = ''.join(['EVP_', ed, method])
+	func = getattr(lib, lib_name)
+	func.restype = c_int
+	globals()[local_name] = func
 
 ## Initialize the engines
 lib.OpenSSL_add_all_digests()

@@ -32,79 +32,72 @@ class CipherType(ctypes.Structure):
 
 evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)
 
-"""
-class Cipher:
+class Cipher(ctypes.Structure):
+	_fields_ = evp._cipher_context_fields
+	finalized = False
 
-	def __init__(self, libcrypto, cipher_type, key, iv, encrypt=True):
-		self.libcrypto = libcrypto
-		self._clean_ctx()
-		key_ptr = c_char_p(key)
-		iv_ptr = c_char_p(iv)
-		self.ctx = self.libcrypto.EVP_CIPHER_CTX_new(cipher_type.cipher, None, key_ptr, iv_ptr)
-		if self.ctx == 0:
-			raise CipherError, "Unable to create cipher context"
-		self.encrypt = encrypt
-		if encrypt: 
-			enc = 1
-		else: 
-			enc = 0
-		result = self.libcrypto.EVP_CipherInit_ex(self.ctx, cipher_type.cipher, None, key_ptr, iv_ptr, c_int(enc))
-		self.cipher_type = cipher_type
-		if result == 0:
-			self._clean_ctx()
-			raise CipherError, "Unable to initialize cipher"
+	def __init__(self, type, key, iv, encrypt=True):
+		evp.CIPHER_CTX_init(self)
+		engine = None
+		type = self.interpret_type(type)
+		res = evp.CipherInit_ex(self, type, engine, key, iv, encrypt)
+		if res == 0:
+			raise CipherError("Unable to initialize cipher")
+		self.out_data = []
 
-	def __del__(self):
-		self._clean_ctx()
+	@staticmethod
+	def interpret_type(type):
+		if not isinstance(type, CipherType):
+			if not hasattr(type, __iter__):
+				type = [type]
+			type = CipherType(*type)
+		return type
 
-	def enable_padding(self, padding=True):
-		if padding:
-			padding_flag = 1
-		else:
-			padding_flag = 0
-		self.libcrypto.EVP_CIPHER_CTX_set_padding(self.ctx, padding_flag)
+	def set_padding(self, padding=True):
+		evp.CIPHER_CTX_set_padding(self, padding)
 
 	def update(self, data):
-		if self.cipher_finalized :
-			raise CipherError, "No updates allowed"
-		if type(data) != type(""):
-			raise TypeError, "A string is expected"
-		if len(data) <= 0:
-			return ""
-		self.data = self.data + data
-	
-	def finish(self, data=None):
+		"""
+		From docs:
+		EVP_EncryptUpdate() encrypts inl bytes from the buffer in and writes the encrypted version to out. This function can be called multiple times to encrypt successive blocks of data. The amount of data written depends on the block alignment of the encrypted data: as a result the amount of data written may be anything from zero bytes to (inl + cipher_block_size - 1) so outl should contain sufficient room. The actual number of bytes written is placed in outl. 
+		"""
+		if self.finalized:
+			raise CipherError("No updates allowed")
+		if not isinstance(data, basestring):
+			raise TypeError("A string is expected")
+		out = ctypes.create_string_buffer(len(data) + evp.MAX_BLOCK_LENGTH - 1)
+		out_len = ctypes.c_int()
+		
+		res = evp.CipherUpdate(self, out, out_len, data, len(data))
+		if res != 1:
+			raise CipherError("Error updating cipher")
+		self.out_data.append(out.raw[:out_len])
+
+	def final(self, data=None):
 		if data is not None:
 			self.update(data)
-		return self._finish()
-		
-	def _finish(self):
-		if self.cipher_finalized :
-			raise CipherError, "Cipher operation is already completed"
-		self.cipher_out = create_string_buffer(len(self.data) + 32)
-		result = self.libcrypto.EVP_CipherUpdate(self.ctx, byref(self.cipher_out), byref(self.cipher_out_len), c_char_p(self.data), len(self.data))
-		if result == 0:
-			self._clean_ctx()
-			raise CipherError, "Unable to update cipher"
-		self.cipher_finalized = True
-		update_data = self.cipher_out.raw[:self.cipher_out_len.value]
-		result = self.libcrypto.EVP_CipherFinal_ex(self.ctx, byref(self.cipher_out), byref(self.cipher_out_len))
-		if result == 0:
-			self._clean_ctx()
-			raise CipherError, "Unable to finalize cipher"
-		final_data = self.cipher_out.raw[:self.cipher_out_len.value]
-		return update_data + final_data
-		
-	def _clean_ctx(self):
-		try:
-			if self.ctx is not None:
-				self.libcrypto.EVP_CIPHER_CTX_cleanup(self.ctx)
-				self.libcrypto.EVP_CIPHER_CTX_free(self.ctx)
-				del(self.ctx)
-		except AttributeError:
-			pass
-		self.cipher_out = None
-		self.cipher_out_len = c_long(0)
-		self.data = ""
-		self.cipher_finalized = False
-"""
+		self.finalized = True
+		out = ctypes.create_string_buffer(evp.MAX_BLOCK_LENGTH)
+		out_len = ctypes.c_int()
+		res = evp.CipherFinal_ex(self, out, out_len)
+		if not res == 1:
+			raise CipherError("Error finalizing cipher")
+		self.out_data.append(out.raw[:out_len])
+		self.final = lambda: ''.join(self.out_data)
+		return ''.join(self.out_data)
+
+_init_args = (ctypes.POINTER(Cipher), ctypes.POINTER(CipherType),
+	ctypes.c_void_p,
+	ctypes.c_char_p, ctypes.c_char_p,
+	)
+_update_args = (ctypes.POINTER(Cipher), ctypes.c_char_p,
+	ctypes.POINTER(ctypes.c_int),
+	ctypes.c_char_p, ctypes.c_int,
+	)
+_final_args = (ctypes.POINTER(Cipher), ctypes.c_char_p,
+	ctypes.POINTER(ctypes.c_int),
+	)
+evp.EncryptInit_ex.argtypes = evp.DecryptInit_ex.argtypes = evp.CipherInit_ex.argtypes = _init_args
+evp.EncryptUpdate.argtypes = evp.DecryptUpdate.argtypes = evp.CipherUpdate.argtypes = _update_args
+evp.EncryptFinal_ex.argtypes = evp.DecryptFinal_ex.argtypes = evp.CipherFinal_ex.argtypes = _final_args
+
