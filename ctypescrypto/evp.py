@@ -98,6 +98,25 @@ lib.EVP_DigestFinal_ex.argtypes = (POINTER(DigestContext),
 	)
 lib.EVP_DigestFinal_ex.restype = c_int
 
+get_cipherbyname = lib.EVP_get_cipherbyname
+get_cipherbyname.argtypes = c_char_p,
+
+_cipher_fields = [
+	('nid', c_int),
+	('block_size', c_int),
+	('key_len', c_int),
+	('iv_len', c_int),
+	('flags', c_ulong),
+	('init', c_void_p),
+	('do_cipher', c_void_p),
+	('cleanup', c_void_p),
+	('ctx_size', c_int),
+	('set_asn1_parameters', c_void_p),
+	('get_asn1_parameters', c_void_p),
+	('ctrl', c_void_p),
+	('app_data', c_void_p),
+]
+
 ## Initialize the engines
 lib.OpenSSL_add_all_digests()
 lib.OpenSSL_add_all_ciphers()
