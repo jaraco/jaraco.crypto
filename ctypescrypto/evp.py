@@ -2,6 +2,8 @@ from ctypes import *
 
 from .support import find_library
 
+MAX_MD_SIZE = 64
+
 class DigestError(Exception): pass
 
 class DigestType(Structure):
@@ -31,6 +33,7 @@ class DigestType(Structure):
 		return res.contents
 
 class DigestContext(Structure):
+	c_name = 'EVP_MD_CTX'
 	_fields_ = [
 		('digest', POINTER(DigestType)),
 		('engine', c_void_p), # todo, POINTER(ENGINE)
@@ -40,24 +43,14 @@ class DigestContext(Structure):
 		('update', c_void_p),
 		]
 
-	@staticmethod
-	def create():
-		res = lib.EVP_MD_CTX_create()
-		if not res:
-			raise DigestError("Unable to create digest context")
-		return res
-
-	def destroy(self):
-		lib.EVP_MD_CTX_destroy(self)
-
-	def __del__(self):
-		self.destroy()
+	def __init__(self):
+		lib.EVP_MD_CTX_init(self)
 
 class Digest(object):
 	finalized = False
 	def __init__(self, digest_type):
 		self.digest_type = digest_type
-		self.context = DigestContext.create()
+		self.context = DigestContext()
 		result = lib.EVP_DigestInit_ex(self.context, digest_type, None)
 		if result == 0:
 			raise DigestError("Unable to initialize digest")
@@ -72,20 +65,39 @@ class Digest(object):
 			raise DigestError, "Unable to update digest"
 		
 	def digest(self, data=None):
-		if self.digest_finalized:
-			raise DigestError, "Digest operation is already completed"
 		if data is not None:
 			self.update(data)
-		self.digest_out = create_string_buffer(256)
-		length = c_long(0)
-		result = self.libcrypto.EVP_DigestFinal_ex(self.ctx, byref(self.digest_out), byref(length))
-		if result != 1 :
+		result_buffer = create_string_buffer(MAX_MD_SIZE)
+		result_length = c_uint()
+		res_code = lib.EVP_DigestFinal_ex(self.context, result_buffer,
+			result_length)
+		if res_code != 1 :
 			raise DigestError, "Unable to finalize digest"
-		self.digest_finalized = True
-		return self.digest_out.raw[:length.value]
+		self.finalized = True
+		result = result_buffer.raw[:result_length.value]
+		# override self.digest to return the same result on subsequent
+		#  calls
+		self.digest = lambda: result
+		return result
 
 lib = find_library('libeay32')
+## Define the argtypes and result types for the EVP functions
 lib.EVP_get_digestbyname.argtypes = c_char_p,
 lib.EVP_get_digestbyname.restype = POINTER(DigestType)
+lib.EVP_DigestInit.argtypes = (
+	POINTER(DigestContext), POINTER(DigestType),
+	)
+lib.EVP_DigestInit_ex.argtypes = lib.EVP_DigestInit.argtypes + (c_void_p,)
+lib.EVP_DigestInit_ex.restype = c_int
+lib.EVP_MD_CTX_init.argtypes = POINTER(DigestContext),
+lib.EVP_MD_CTX_create.restype = POINTER(DigestContext)
+lib.EVP_DigestUpdate.argtypes = POINTER(DigestContext), c_char_p, c_int
+lib.EVP_DigestUpdate.restype = c_int
+lib.EVP_DigestFinal_ex.argtypes = (POINTER(DigestContext),
+	c_char_p, POINTER(c_uint),
+	)
+lib.EVP_DigestFinal_ex.restype = c_int
+
+## Initialize the engines
 lib.OpenSSL_add_all_digests()
 lib.OpenSSL_add_all_ciphers()
