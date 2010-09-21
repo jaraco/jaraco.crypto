@@ -1,7 +1,9 @@
 from ctypescrypto import cipher
 
 def test_cipher_type():
+	# One can pass the algorithm and mode separately or together
 	t = cipher.CipherType.from_name('AES-256', 'CBC')
+	t = cipher.CipherType.from_name('AES-256-CBC')
 
 def pytest_generate_tests(metafunc):
 	if "data_parts" in metafunc.funcargnames:
@@ -20,7 +22,7 @@ def test_cipher(data_parts):
 	params = ('AES-256', 'CBC'), key, iv
 	ce = cipher.Cipher(*params)
 	map(ce.update, data_parts)
-	data_enc = ce.finish()
+	data_enc = ce.finalize()
 	cd = cipher.Cipher(*params, encrypt=False)
-	assert cd.finish(data_enc) == ''.join(data_parts)
+	assert cd.finalize(data_enc) == ''.join(data_parts)
 

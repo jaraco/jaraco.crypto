@@ -140,6 +140,8 @@ _cipher_context_fields = [
 	('final', c_char*MAX_BLOCK_LENGTH),
 ]
 
+CIPHER_CTX_init = lib.EVP_CIPHER_CTX_init
+
 #EncryptInit_ex = lib.EVP_EncryptInit_ex
 #DecryptInit_ex = lib.EVP_DecryptInit_ex
 #...

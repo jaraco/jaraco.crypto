@@ -48,9 +48,9 @@ class Cipher(ctypes.Structure):
 	@staticmethod
 	def interpret_type(type):
 		if not isinstance(type, CipherType):
-			if not hasattr(type, __iter__):
+			if not hasattr(type, '__iter__'):
 				type = [type]
-			type = CipherType(*type)
+			type = CipherType.from_name(*type)
 		return type
 
 	def set_padding(self, padding=True):
@@ -71,9 +71,9 @@ class Cipher(ctypes.Structure):
 		res = evp.CipherUpdate(self, out, out_len, data, len(data))
 		if res != 1:
 			raise CipherError("Error updating cipher")
-		self.out_data.append(out.raw[:out_len])
+		self.out_data.append(out.raw[:out_len.value])
 
-	def final(self, data=None):
+	def finalize(self, data=None):
 		if data is not None:
 			self.update(data)
 		self.finalized = True
@@ -82,8 +82,8 @@ class Cipher(ctypes.Structure):
 		res = evp.CipherFinal_ex(self, out, out_len)
 		if not res == 1:
 			raise CipherError("Error finalizing cipher")
-		self.out_data.append(out.raw[:out_len])
-		self.final = lambda: ''.join(self.out_data)
+		self.out_data.append(out.raw[:out_len.value])
+		self.finalize = lambda: ''.join(self.out_data)
 		return ''.join(self.out_data)
 
 _init_args = (ctypes.POINTER(Cipher), ctypes.POINTER(CipherType),
@@ -100,4 +100,4 @@ _final_args = (ctypes.POINTER(Cipher), ctypes.c_char_p,
 evp.EncryptInit_ex.argtypes = evp.DecryptInit_ex.argtypes = evp.CipherInit_ex.argtypes = _init_args
 evp.EncryptUpdate.argtypes = evp.DecryptUpdate.argtypes = evp.CipherUpdate.argtypes = _update_args
 evp.EncryptFinal_ex.argtypes = evp.DecryptFinal_ex.argtypes = evp.CipherFinal_ex.argtypes = _final_args
-
+evp.CIPHER_CTX_init.argtypes = ctypes.POINTER(Cipher),
