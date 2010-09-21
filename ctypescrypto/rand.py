@@ -1,45 +1,44 @@
-from ctypes import *
+import ctypes
 
-import ctypescrypto
+from evp import lib
 
 class RandError(Exception):
-    pass
+	pass
 
-def bytes(libcrypto, num, check_result=False):
-    if num <= 0 :
-        raise ValueError, "'num' should be > 0"
-    buffer = create_string_buffer(num)
-    try :
-        result = libcrypto.RAND_bytes(byref(buffer), num) 
-        if check_result and result == 0:
-            raise RandError, "Random Number Generator not seeded sufficiently"
-        return buffer.raw[:num]
-    finally :
-        _free_buffer(libcrypto, buffer)
+lib.RAND_bytes.argtypes = ctypes.c_char_p, ctypes.c_int
+lib.RAND_pseudo_bytes.argtypes = ctypes.c_char_p, ctypes.c_int
 
-def pseudo_bytes(libcrypto, num):
-    if num <= 0 :
-        raise ValueError, "'num' should be > 0"
-    buffer = create_string_buffer(num)
-    try :
-        libcrypto.RAND_pseudo_bytes(byref(buffer), num)
-        return buffer.raw[:num]
-    finally :
-        _free_buffer(libcrypto, buffer)
+def bytes(num, check_result=False):
+	if num <= 0:
+		raise ValueError("num must be > 0")
+	bytes = ctypes.create_string_buffer(num)
+	result = lib.RAND_bytes(bytes, num) 
+	if check_result and result == 0:
+		msg = "Random Number Generator not seeded sufficiently"
+		raise RandError(msg)
+	return bytes.raw[:num]
 
-def seed(libcrypto, data, entropy=None):
-    if type(data) != type(""):
-        raise TypeError, "A string is expected"
-    ptr = c_char_p(data)
-    size = len(data)
-    if entropy is None:
-        libcrypto.RAND_seed(ptr, size)
-    else :
-        libcrypto.RAND_add(ptr, size, entropy)
+def pseudo_bytes(num):
+	if num <= 0:
+		raise ValueError("num must be > 0")
+	bytes = ctypes.create_string_buffer(num)
+	lib.RAND_pseudo_bytes(bytes, num)
+	return bytes.raw[:num]
 
-def status(libcrypto):
-    return libcrypto.RAND_status()
-    
-def _free_buffer(libcrypto, buffer):
-    libcrypto.RAND_cleanup()
-    del(buffer)
+lib.RAND_seed.argtypes = ctypes.c_char_p, ctypes.c_int
+lib.RAND_add.argtypes = ctypes.c_char_p, ctypes.c_int, ctypes.c_double
+
+def seed(data, entropy=None):
+	if not isinstance(data, basestring):
+		raise TypeError("data must be a string")
+	size = len(data)
+	params = [data, len(data)]
+	if entropy:
+		func = lib.RAND_add
+		params.append(entropy)
+	else:
+		func = lib.RAND_seed
+	func(*params)
+
+status = lib.RAND_status
+cleanup = lib.RAND_cleanup
