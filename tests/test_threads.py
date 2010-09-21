@@ -3,12 +3,13 @@ import py.test
 
 import test_evp
 import test_cipher
+import test_digest
 
 class ThreadedTester(Thread):
 	failed = False
 	def run(self):
 		try:
-			test_evp.test_digest()
+			test_digest.test_digest()
 			test_cipher.test_cipher(['a'*1000, 'd'*1000])
 			#test_evp.test_rand()
 		except Exception, e:
