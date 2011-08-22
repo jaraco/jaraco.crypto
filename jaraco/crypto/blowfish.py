@@ -23,8 +23,6 @@
 # All disclaimers of warranty from the original module also
 # apply to these changes.
 
-from __future__ import print_function
-
 """
 Blowfish Encryption
 
@@ -38,13 +36,59 @@ on 64-bit blocks, or 8 byte strings.
 
 Send questions, comments, bugs my way:
     Michael Gilfix <mgilfix@eecs.tufts.edu>
-    
+
 The module has been expanded to include CTR stream encryption/decryption
 mode, built from the primitives from the orignal module. This change
 did not alter any of the base Blowfish code from the original author.
 
 The author of CTR changes is:
     Ivan Voras <ivoras@gmail.com>
+
+Test usage:
+
+>>> key = 'This is a test key'
+>>> cipher = Blowfish (key)
+
+test encryption
+
+>>> xl = 123456
+>>> xr = 654321
+
+Plain text is (xl, xr)
+
+>>> cl, cr = cipher.cipher(xl, xr, cipher.ENCRYPT)
+
+Cipher text is (cl, cr)
+
+>>> dl, dr = cipher.cipher(cl, cr, cipher.DECRYPT)
+
+>>> (dl, dr) == (xl, xr)
+True
+
+Test block encrypt
+
+>>> text = "testtext"
+
+>>> crypted = cipher.encrypt(text)
+>>> crypted == text
+False
+>>> decrypted = cipher.decrypt(crypted)
+>>> decrypted == text
+True
+
+Test CTR encrypt
+
+>>> text = "If the offer's shunned, you might as well be walking on the sun"
+
+>>> cipher.initCTR()
+>>> crypted = cipher.encryptCTR(text)
+>>> crypted == text
+False
+>>> cipher.initCTR()
+>>> decrypted = cipher.decryptCTR(crypted)
+>>> decrypted == text
+True
+
 """
 
 import struct, types
@@ -88,16 +132,16 @@ class Blowfish:
 
         def initCTR(self):
             Initializes CTR engine for encryption or decryption.
-            
+
         def encryptCTR(self, data):
             Encrypts an arbitrary string and returns the
             encrypted string. The method can be called successively
             for multiple string blocks.
-            
+
         def decryptCTR(self, data):
             Decrypts a string encrypted with encryptCTR() and
             returns the decrypted string.
-            
+
     Private members:
 
         def __round_func (self, xl)
@@ -546,37 +590,3 @@ class Blowfish:
 
     def key_bits (self):
         return 56 * 8
-
-##############################################################
-# Module testing
-
-if __name__ == '__main__':
-    key = 'This is a test key'
-    cipher = Blowfish (key)
-
-    print("Testing encryption:")
-    xl = 123456
-    xr = 654321
-    print("\tPlain text: (%s, %s)" %(xl, xr))
-    cl, cr = cipher.cipher (xl, xr, cipher.ENCRYPT)
-    print("\tCrypted is: (%s, %s)" %(cl, cr))
-    dl, dr = cipher.cipher (cl, cr, cipher.DECRYPT)
-    print("\tUnencrypted is: (%s, %s)" %(dl, dr))
-
-    print("Testing block encrypt:")
-    text = 'testtest'
-    print("\tText:\t\t%s" %text)
-    crypted = cipher.encrypt (text)
-    print("\tEncrypted:\t%s" %crypted)
-    decrypted = cipher.decrypt (crypted)
-    print("\tDecrypted:\t%s" %decrypted)
-    
-    print("Testing CTR encrypt:")
-    cipher.initCTR()
-    text = "The quick brown fox jumps over the lazy dog"
-    print("\tText:\t\t", text)
-    crypted = cipher.encryptCTR(text)
-    print("\tEncrypted:\t", crypted)
-    cipher.initCTR()
-    decrypted = cipher.decryptCTR(crypted)
-    print("\tDecrypted:\t", decrypted)
