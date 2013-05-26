@@ -19,3 +19,5 @@ several other projects, including::
  - The code repository was originally a fork of the `ctypescrypto project
    <http://code.google.com/p/ctypescrypto/>`_. The code history includes the
    full history of the ancestral project.
+ - The blowfish code was adapted from a module contributed to the community
+   by Michael Gilfix.
