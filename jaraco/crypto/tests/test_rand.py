@@ -1,6 +1,6 @@
 import py.test
 
-from ctypescrypto import rand
+from jaraco.crypto import rand
 
 def test_bytes():
 	bytes = rand.bytes(100)

@@ -1,7 +1,8 @@
-import py.test
 import binascii
 
-from ctypescrypto import digest
+import py.test
+
+from jaraco.crypto import digest
 
 def test_load_valid_digest_type_by_name():
 	t = digest.DigestType.from_name('SHA256')

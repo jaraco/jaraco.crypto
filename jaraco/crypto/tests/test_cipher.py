@@ -1,5 +1,6 @@
 import itertools
-from ctypescrypto import cipher
+
+from jaraco.crypto import cipher
 
 def test_cipher_type(algorithm, mode):
 	# One can pass the algorithm and mode separately or together

@@ -1,9 +1,7 @@
 from threading import Thread
-import py.test
 
-import test_evp
-import test_cipher
-import test_digest
+from . import test_cipher
+from . import test_digest
 
 class ThreadedTester(Thread):
 	failed = False
