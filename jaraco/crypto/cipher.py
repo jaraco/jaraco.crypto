@@ -1,12 +1,16 @@
 import ctypes
 
+import six
+
 from . import evp
 
 CIPHER_ALGORITHMS = ("DES", "DES-EDE3", "BF", "AES-128", "AES-192", "AES-256")
 CIPHER_MODES = ("CBC", "CFB", "OFB", "ECB")
 
+
 class CipherError(Exception):
 	pass
+
 
 class CipherType(ctypes.Structure):
 	_fields_ = evp._cipher_fields
@@ -15,14 +19,15 @@ class CipherType(ctypes.Structure):
 	def from_name(cls, *cipher_name):
 		"""
 		Create a CipherType from a cipher name.
-		
+
 		Takes one or two parameters. If one is supplied, it should be
 		a dash-separated string of algorithm-mode.
 		If two are supplied, they should be the algorithm and mode.
 		"""
 		cipher_name = '-'.join(cipher_name)
 		algorithm, mode = cipher_name.rsplit('-', 1)
-		assert algorithm in CIPHER_ALGORITHMS, "Unknown algorithm %(algorithm)s" % vars()
+		assert algorithm in CIPHER_ALGORITHMS, (
+			"Unknown algorithm %(algorithm)s" % vars())
 		assert mode in CIPHER_MODES, "Unknown mode %(mode)s" % vars()
 		res = evp.get_cipherbyname(cipher_name)
 		if not res:
@@ -30,7 +35,9 @@ class CipherType(ctypes.Structure):
 		res.contents.algorithm, res.contents.mode = algorithm, mode
 		return res.contents
 
+
 evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)
+
 
 class Cipher(ctypes.Structure):
 	_fields_ = evp._cipher_context_fields
@@ -59,15 +66,24 @@ class Cipher(ctypes.Structure):
 	def update(self, data):
 		"""
 		From docs:
-		EVP_EncryptUpdate() encrypts inl bytes from the buffer in and writes the encrypted version to out. This function can be called multiple times to encrypt successive blocks of data. The amount of data written depends on the block alignment of the encrypted data: as a result the amount of data written may be anything from zero bytes to (inl + cipher_block_size - 1) so outl should contain sufficient room. The actual number of bytes written is placed in outl. 
+		EVP_EncryptUpdate() encrypts inl bytes from the
+		buffer in and writes the encrypted version to out.
+		This function can be called multiple times to
+		encrypt successive blocks of data. The amount of
+		data written depends on the block alignment of the
+		encrypted data: as a result the amount of data
+		written may be anything from zero bytes to
+		(inl + cipher_block_size - 1) so outl should
+		contain sufficient room. The actual number of
+		bytes written is placed in outl.
 		"""
 		if self.finalized:
 			raise CipherError("No updates allowed")
-		if not isinstance(data, basestring):
+		if not isinstance(data, six.string_types):
 			raise TypeError("A string is expected")
 		out = ctypes.create_string_buffer(len(data) + evp.MAX_BLOCK_LENGTH - 1)
 		out_len = ctypes.c_int()
-		
+
 		res = evp.CipherUpdate(self, out, out_len, data, len(data))
 		if res != 1:
 			raise CipherError("Error updating cipher")
@@ -86,18 +102,25 @@ class Cipher(ctypes.Structure):
 		self.finalize = lambda: ''.join(self.out_data)
 		return ''.join(self.out_data)
 
-_init_args = (ctypes.POINTER(Cipher), ctypes.POINTER(CipherType),
+
+_init_args = (
+	ctypes.POINTER(Cipher), ctypes.POINTER(CipherType),
 	ctypes.c_void_p,
 	ctypes.c_char_p, ctypes.c_char_p,
-	)
-_update_args = (ctypes.POINTER(Cipher), ctypes.c_char_p,
+)
+_update_args = (
+	ctypes.POINTER(Cipher), ctypes.c_char_p,
 	ctypes.POINTER(ctypes.c_int),
 	ctypes.c_char_p, ctypes.c_int,
-	)
-_final_args = (ctypes.POINTER(Cipher), ctypes.c_char_p,
+)
+_final_args = (
+	ctypes.POINTER(Cipher), ctypes.c_char_p,
 	ctypes.POINTER(ctypes.c_int),
-	)
-evp.EncryptInit_ex.argtypes = evp.DecryptInit_ex.argtypes = evp.CipherInit_ex.argtypes = _init_args
-evp.EncryptUpdate.argtypes = evp.DecryptUpdate.argtypes = evp.CipherUpdate.argtypes = _update_args
-evp.EncryptFinal_ex.argtypes = evp.DecryptFinal_ex.argtypes = evp.CipherFinal_ex.argtypes = _final_args
+)
+evp.EncryptInit_ex.argtypes = evp.DecryptInit_ex.argtypes \
+	= evp.CipherInit_ex.argtypes = _init_args
+evp.EncryptUpdate.argtypes = evp.DecryptUpdate.argtypes \
+	= evp.CipherUpdate.argtypes = _update_args
+evp.EncryptFinal_ex.argtypes = evp.DecryptFinal_ex.argtypes \
+	= evp.CipherFinal_ex.argtypes = _final_args
 evp.CIPHER_CTX_init.argtypes = ctypes.POINTER(Cipher),

@@ -1,5 +1,6 @@
 import ctypes
 
+
 class Stack(ctypes.Structure):
 	_fields_ = [
 		('num', ctypes.c_int),
@@ -9,11 +10,13 @@ class Stack(ctypes.Structure):
 		('comp', ctypes.c_void_p),
 	]
 
+
 class CRYPTO_EX_DATA(ctypes.Structure):
 	_fields_ = [
 		('sk', ctypes.c_void_p),
 		('dummy', ctypes.c_int),
 	]
+
 
 class BIO(ctypes.Structure):
 	_fields_ = [
@@ -34,11 +37,13 @@ class BIO(ctypes.Structure):
 		('ex_data', CRYPTO_EX_DATA),
 	]
 
+
 FILETYPE_PEM = 1
 FILETYPE_ASN1 = 2
 
 libeay32 = ctypes.windll.libeay32
 libeay32.BN_bn2hex.restype = ctypes.c_char_p
+
 
 class X509(ctypes.Structure):
 	_fields_ = [
@@ -70,8 +75,9 @@ def load_certificate(type, data):
 		raise Exception("Exception loading cert")
 	return ctypes.cast(cert, ctypes.POINTER(X509)).contents
 
+
 if __name__ == '__main__':
 	with open('server.pem', 'rb') as certfile:
 		cert_data = certfile.read()
 	cert = load_certificate(FILETYPE_PEM, cert_data)
-	print cert.get_serial_number()
+	print(cert.get_serial_number())

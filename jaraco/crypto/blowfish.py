@@ -91,9 +91,16 @@ True
 
 """
 
-import struct, types
+import struct
+import types
+
+import six
 
 __author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
+
+
+long = six.integer_types[0]
+
 
 class Blowfish:
 
@@ -144,7 +151,7 @@ class Blowfish:
 
     Private members:
 
-        def __round_func (self, xl)
+        def __round_func(self, xl)
             Performs an obscuring function on the 32-bit
             block of data 'xl', which is the left half of
             the 64-bit block of data. Returns the 32-bit
@@ -159,10 +166,12 @@ class Blowfish:
     # For the __round_func
     modulus = long(2) ** 32
 
-    def __init__ (self, key):
+    def __init__(self, key):
 
-        if not key or len (key) < 8 or len (key) > 56:
-            raise RuntimeError("Attempted to initialize Blowfish cipher with key of invalid length: %s" % len (key))
+        if not key or len(key) < 8 or len(key) > 56:
+            raise RuntimeError(
+                "Attempted to initialize Blowfish cipher with "
+                "key of invalid length: %s" % len(key))
 
         self.p_boxes = [
             0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344,
@@ -441,13 +450,13 @@ class Blowfish:
 
         # Cycle through the p-boxes and round-robin XOR the
         # key with the p-boxes
-        key_len = len (key)
+        key_len = len(key)
         index = 0
-        for i in range (len (self.p_boxes)):
-            val = (ord (key[index % key_len]) << 24) + \
-                  (ord (key[(index + 1) % key_len]) << 16) + \
-                  (ord (key[(index + 2) % key_len]) << 8) + \
-                   ord (key[(index + 3) % key_len])
+        for i in range(len(self.p_boxes)):
+            val = (ord(key[index % key_len]) << 24) + \
+                  (ord(key[(index + 1) % key_len]) << 16) + \
+                  (ord(key[(index + 2) % key_len]) << 8) + \
+                ord(key[(index + 3) % key_len])
             self.p_boxes[i] = self.p_boxes[i] ^ val
             index = index + 4
 
@@ -455,43 +464,41 @@ class Blowfish:
         l, r = 0, 0
 
         # Begin chain replacing the p-boxes
-        for i in range (0, len (self.p_boxes), 2):
-            l, r = self.cipher (l, r, self.ENCRYPT)
+        for i in range(0, len(self.p_boxes), 2):
+            l, r = self.cipher(l, r, self.ENCRYPT)
             self.p_boxes[i] = l
             self.p_boxes[i + 1] = r
 
         # Chain replace the s-boxes
-        for i in range (len (self.s_boxes)):
-            for j in range (0, len (self.s_boxes[i]), 2):
-                l, r = self.cipher (l, r, self.ENCRYPT)
+        for i in range(len(self.s_boxes)):
+            for j in range(0, len(self.s_boxes[i]), 2):
+                l, r = self.cipher(l, r, self.ENCRYPT)
                 self.s_boxes[i][j] = l
                 self.s_boxes[i][j + 1] = r
 
         self.initCTR()
 
-
-    def cipher (self, xl, xr, direction):
+    def cipher(self, xl, xr, direction):
         """Encryption primitive"""
         if direction == self.ENCRYPT:
-            for i in range (16):
+            for i in range(16):
                 xl = xl ^ self.p_boxes[i]
-                xr = self.__round_func (xl) ^ xr
+                xr = self.__round_func(xl) ^ xr
                 xl, xr = xr, xl
             xl, xr = xr, xl
             xr = xr ^ self.p_boxes[16]
             xl = xl ^ self.p_boxes[17]
         else:
-            for i in range (17, 1, -1):
+            for i in range(17, 1, -1):
                 xl = xl ^ self.p_boxes[i]
-                xr = self.__round_func (xl) ^ xr
+                xr = self.__round_func(xl) ^ xr
                 xl, xr = xr, xl
             xl, xr = xr, xl
             xr = xr ^ self.p_boxes[1]
             xl = xl ^ self.p_boxes[0]
         return xl, xr
 
-
-    def __round_func (self, xl):
+    def __round_func(self, xl):
         a = (xl & 0xFF000000) >> 24
         b = (xl & 0x00FF0000) >> 16
         c = (xl & 0x0000FF00) >> 8
@@ -499,45 +506,55 @@ class Blowfish:
 
         # Perform all ops as longs then and out the last 32-bits to
         # obtain the integer
-        f = (long (self.s_boxes[0][a]) + long (self.s_boxes[1][b])) % self.modulus
-        f = f ^ long (self.s_boxes[2][c])
-        f = f + long (self.s_boxes[3][d])
+        f = (
+            long(self.s_boxes[0][a]) + long(self.s_boxes[1][b])) % self.modulus
+        f = f ^ long(self.s_boxes[2][c])
+        f = f + long(self.s_boxes[3][d])
         f = (f % self.modulus) & 0xFFFFFFFF
 
         return f
 
-
-    def encrypt (self, data):
-        if not len (data) == 8:
-            raise RuntimeError("Attempted to encrypt data of invalid block length: %s" % len(data))
+    def encrypt(self, data):
+        if not len(data) == 8:
+            raise RuntimeError(
+                "Attempted to encrypt data of invalid block length: %s"
+                % len(data))
 
         # Use big endianess since that's what everyone else uses
-        xl = ord (data[3]) | (ord (data[2]) << 8) | (ord (data[1]) << 16) | (ord (data[0]) << 24)
-        xr = ord (data[7]) | (ord (data[6]) << 8) | (ord (data[5]) << 16) | (ord (data[4]) << 24)
+        xl = ord(data[3]) | (ord(data[2]) << 8) | (ord(data[1]) << 16) \
+            | (ord(data[0]) << 24)
+        xr = ord(data[7]) | (ord(data[6]) << 8) | (ord(data[5]) << 16) \
+            | (ord(data[4]) << 24)
 
-        cl, cr = self.cipher (xl, xr, self.ENCRYPT)
-        chars = ''.join ([
-            chr ((cl >> 24) & 0xFF), chr ((cl >> 16) & 0xFF), chr ((cl >> 8) & 0xFF), chr (cl & 0xFF),
-            chr ((cr >> 24) & 0xFF), chr ((cr >> 16) & 0xFF), chr ((cr >> 8) & 0xFF), chr (cr & 0xFF)
+        cl, cr = self.cipher(xl, xr, self.ENCRYPT)
+        chars = ''.join([
+            chr((cl >> 24) & 0xFF), chr((cl >> 16) & 0xFF),
+            chr((cl >> 8) & 0xFF), chr(cl & 0xFF),
+            chr((cr >> 24) & 0xFF), chr((cr >> 16) & 0xFF),
+            chr((cr >> 8) & 0xFF), chr(cr & 0xFF),
         ])
         return chars
 
-
-    def decrypt (self, data):
-        if not len (data) == 8:
-            raise RuntimeError("Attempted to encrypt data of invalid block length: %s" % len(data))
+    def decrypt(self, data):
+        if not len(data) == 8:
+            raise RuntimeError(
+                "Attempted to encrypt data of invalid block length: %s"
+                % len(data))
 
         # Use big endianess since that's what everyone else uses
-        cl = ord (data[3]) | (ord (data[2]) << 8) | (ord (data[1]) << 16) | (ord (data[0]) << 24)
-        cr = ord (data[7]) | (ord (data[6]) << 8) | (ord (data[5]) << 16) | (ord (data[4]) << 24)
+        cl = ord(data[3]) | (ord(data[2]) << 8) | (ord(data[1]) << 16) \
+            | (ord(data[0]) << 24)
+        cr = ord(data[7]) | (ord(data[6]) << 8) | (ord(data[5]) << 16) \
+            | (ord(data[4]) << 24)
 
-        xl, xr = self.cipher (cl, cr, self.DECRYPT)
-        chars = ''.join ([
-            chr ((xl >> 24) & 0xFF), chr ((xl >> 16) & 0xFF), chr ((xl >> 8) & 0xFF), chr (xl & 0xFF),
-            chr ((xr >> 24) & 0xFF), chr ((xr >> 16) & 0xFF), chr ((xr >> 8) & 0xFF), chr (xr & 0xFF)
+        xl, xr = self.cipher(cl, cr, self.DECRYPT)
+        chars = ''.join([
+            chr((xl >> 24) & 0xFF), chr((xl >> 16) & 0xFF),
+            chr((xl >> 8) & 0xFF), chr(xl & 0xFF),
+            chr((xr >> 24) & 0xFF), chr((xr >> 16) & 0xFF),
+            chr((xr >> 8) & 0xFF), chr(xr & 0xFF),
         ])
         return chars
-
 
     def initCTR(self, iv=0):
         """Initializes CTR mode of the cypher"""
@@ -545,13 +562,12 @@ class Blowfish:
         self.ctr_iv = iv
         self._calcCTRBUF()
 
-
     def _calcCTRBUF(self):
         """Calculates one block of CTR keystream"""
-        self.ctr_cks = self.encrypt(struct.pack("Q", self.ctr_iv)) # keystream block
+        # keystream block
+        self.ctr_cks = self.encrypt(struct.pack("Q", self.ctr_iv))
         self.ctr_iv += 1
         self.ctr_pos = 0
-
 
     def _nextCTRByte(self):
         """Returns one byte of CTR keystream"""
@@ -561,32 +577,27 @@ class Blowfish:
             self._calcCTRBUF()
         return b
 
-
     def encryptCTR(self, data):
         """
         Encrypts a buffer of data with CTR mode. Multiple successive buffers
         (belonging to the same logical stream of buffers) can be encrypted
         with this method one after the other without any intermediate work.
         """
-        if type(data) != types.StringType:
-            raise RuntimeException("Can only work on 8-bit strings")
+        if not isinstance(data, types.StringType):
+            raise RuntimeError("Can only work on 8-bit strings")
         result = []
         for ch in data:
             result.append(chr(ord(ch) ^ self._nextCTRByte()))
         return "".join(result)
 
-
     def decryptCTR(self, data):
         return self.encryptCTR(data)
 
-
-    def blocksize (self):
+    def blocksize(self):
         return 8
 
-
-    def key_length (self):
+    def key_length(self):
         return 56
 
-
-    def key_bits (self):
+    def key_bits(self):
         return 56 * 8

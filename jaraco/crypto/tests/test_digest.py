@@ -4,12 +4,15 @@ import py.test
 
 from jaraco.crypto import digest
 
+
 def test_load_valid_digest_type_by_name():
-	t = digest.DigestType.from_name('SHA256')
+	digest.DigestType.from_name('SHA256')
+
 
 def test_load_invalid_digest_type_by_name():
 	# dne is Does Not Exist
 	py.test.raises(digest.DigestError, digest.DigestType.from_name, 'sha-dne')
+
 
 def test_digest():
 	digest_type = digest.DigestType.from_name('SHA512')

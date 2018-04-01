@@ -2,26 +2,31 @@ import itertools
 
 from jaraco.crypto import cipher
 
+
 def test_cipher_type(algorithm, mode):
 	# One can pass the algorithm and mode separately or together
-	t = cipher.CipherType.from_name(algorithm, mode)
-	t = cipher.CipherType.from_name(algorithm + '-' + mode)
+	cipher.CipherType.from_name(algorithm, mode)
+	cipher.CipherType.from_name(algorithm + '-' + mode)
+
 
 def pytest_generate_tests(metafunc):
 	if "data_parts" in metafunc.funcargnames:
 		for i in range(0, 1000, 50):
 			metafunc.addcall(funcargs=dict(
-				data_parts=('a'*i, 'b'*i, 'c'*i)
-				))
+				data_parts=('a' * i, 'b' * i, 'c' * i)
+			))
 	if metafunc.funcargnames == ['algorithm', 'mode']:
-		pairs = itertools.product(cipher.CIPHER_ALGORITHMS,
+		pairs = itertools.product(
+			cipher.CIPHER_ALGORITHMS,
 			cipher.CIPHER_MODES)
 		for algorithm, mode in pairs:
 			# apparently DES-EDE3-ECB is not a valid mode
-			if (algorithm, mode) == ('DES-EDE3', 'ECB'): continue
+			if (algorithm, mode) == ('DES-EDE3', 'ECB'):
+				continue
 			metafunc.addcall(funcargs=dict(
 				algorithm=algorithm, mode=mode
-				))
+			))
+
 
 def test_cipher(data_parts):
 	"""
@@ -36,4 +41,3 @@ def test_cipher(data_parts):
 	data_enc = ce.finalize()
 	cd = cipher.Cipher(*params, encrypt=False)
 	assert cd.finalize(data_enc) == ''.join(data_parts)
-

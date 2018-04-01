@@ -1,7 +1,19 @@
 import itertools
-from ctypes import *
+from ctypes import (
+	c_int, c_ulong, c_void_p, c_char_p, POINTER, c_uint, c_char,
+)
 
 from .support import find_library
+
+
+get_digestbyname = None
+DigestInit = None
+DigestInit_ex = None
+MD_CTX_init = None
+MD_CTX_create = None
+DigestUpdate = None
+DigestFinal_ex = None
+get_cipherbyname = None
 
 MAX_MD_SIZE = 64
 
@@ -17,20 +29,21 @@ _digest_type_fields = [
 	('cleanup', c_void_p),
 	('sign', c_void_p),
 	('verify', c_void_p),
-	('required_pkey_type', c_int*5),
+	('required_pkey_type', c_int * 5),
 	('block size', c_int),
 	('ctx_size', c_int),
 	('md_ctrl', c_void_p),
 ]
 
 _digest_context_fields = [
-	('p_type', c_void_p), # POINTER(DigestType)
-	('engine', c_void_p), # todo, POINTER(ENGINE)
+	('p_type', c_void_p),  # POINTER(DigestType)
+	('engine', c_void_p),  # todo, POINTER(ENGINE)
 	('flags', c_ulong),
 	('md_data', c_void_p),
-	('pctx', c_void_p), # todo, POINTER(EVP_PKEY_CTX)
+	('pctx', c_void_p),  # todo, POINTER(EVP_PKEY_CTX)
 	('update_func', c_void_p),
 ]
+
 
 def _reg(name):
 	"""
@@ -40,27 +53,33 @@ def _reg(name):
 	libname = 'EVP_' + name
 	globals()[name] = getattr(lib, libname)
 
+
 lib = find_library('libeay32')
-## Define the argtypes and result types for the EVP functions
-map(_reg, 'get_digestbyname DigestInit DigestInit_ex MD_CTX_init '
+
+# Define the argtypes and result types for the EVP functions
+map(
+	_reg, 'get_digestbyname DigestInit DigestInit_ex MD_CTX_init '
 	'MD_CTX_create DigestUpdate DigestFinal_ex'.split())
+
 
 def _set_digest_arg_types(DigestType, Digest):
 	get_digestbyname.argtypes = c_char_p,
 	get_digestbyname.restype = POINTER(DigestType)
 	DigestInit.argtypes = (
 		POINTER(Digest), POINTER(DigestType),
-		)
+	)
 	DigestInit_ex.argtypes = lib.EVP_DigestInit.argtypes + (c_void_p,)
 	DigestInit_ex.restype = c_int
 	MD_CTX_init.argtypes = POINTER(Digest),
 	MD_CTX_create.restype = POINTER(Digest)
 	DigestUpdate.argtypes = POINTER(Digest), c_char_p, c_int
 	DigestUpdate.restype = c_int
-	DigestFinal_ex.argtypes = (POINTER(Digest),
+	DigestFinal_ex.argtypes = (
+		POINTER(Digest),
 		c_char_p, POINTER(c_uint),
-		)
+	)
 	DigestFinal_ex.restype = c_int
+
 
 _reg('get_cipherbyname')
 get_cipherbyname.argtypes = c_char_p,
@@ -86,13 +105,13 @@ MAX_BLOCK_LENGTH = 32
 MAX_KEY_LENGTH = 32
 
 _cipher_context_fields = [
-	('cipher', c_void_p), # POINTER(CipherType)
-	('engine', c_void_p), # POINTER(ENGINE)
+	('cipher', c_void_p),  # POINTER(CipherType)
+	('engine', c_void_p),  # POINTER(ENGINE)
 	('encrypt', c_int),
 	('buf_len', c_int),
-	('oiv', c_char*MAX_IV_LENGTH),
-	('iv', c_char*MAX_IV_LENGTH),
-	('buf', c_char*MAX_BLOCK_LENGTH),
+	('oiv', c_char * MAX_IV_LENGTH),
+	('iv', c_char * MAX_IV_LENGTH),
+	('buf', c_char * MAX_BLOCK_LENGTH),
 	('num', c_int),
 	('app_data', c_void_p),
 	('key_len', c_int),
@@ -100,24 +119,24 @@ _cipher_context_fields = [
 	('cipher_data', c_void_p),
 	('final_used', c_int),
 	('block_mask', c_int),
-	('final', c_char*MAX_BLOCK_LENGTH),
+	('final', c_char * MAX_BLOCK_LENGTH),
 ]
 
 CIPHER_CTX_init = lib.EVP_CIPHER_CTX_init
 
-#EncryptInit_ex = lib.EVP_EncryptInit_ex
-#DecryptInit_ex = lib.EVP_DecryptInit_ex
-#...
+# EncryptInit_ex = lib.EVP_EncryptInit_ex
+# DecryptInit_ex = lib.EVP_DecryptInit_ex
+# ...
 for ed, method in itertools.product(
 	['Encrypt', 'Decrypt', 'Cipher'],
 	['Init_ex', 'Update', 'Final_ex'],
-	):
+):
 	local_name = ''.join([ed, method])
 	lib_name = ''.join(['EVP_', ed, method])
 	func = getattr(lib, lib_name)
 	func.restype = c_int
 	globals()[local_name] = func
 
-## Initialize the engines
+# Initialize the engines
 lib.OpenSSL_add_all_digests()
 lib.OpenSSL_add_all_ciphers()

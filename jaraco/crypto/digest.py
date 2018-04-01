@@ -1,8 +1,13 @@
 import ctypes
 
+import six
+
 import evp
 
-class DigestError(Exception): pass
+
+class DigestError(Exception):
+	pass
+
 
 class DigestType(ctypes.Structure):
 	_fields_ = evp._digest_type_fields
@@ -14,9 +19,11 @@ class DigestType(ctypes.Structure):
 			raise DigestError("Unknown Digest: %(digest_name)s" % vars())
 		return res.contents
 
+
 class Digest(ctypes.Structure):
 	_fields_ = evp._digest_context_fields
 	finalized = False
+
 	def __init__(self, digest_type):
 		self.digest_type = digest_type
 		evp.MD_CTX_init(self)
@@ -27,26 +34,28 @@ class Digest(ctypes.Structure):
 	def update(self, data):
 		if self.finalized:
 			raise DigestError("Digest is finalized; no updates allowed")
-		if not isinstance(data, basestring):
+		if not isinstance(data, six.string_types):
 			raise TypeError("A string is expected")
 		result = evp.DigestUpdate(self, data, len(data))
 		if result != 1:
-			raise DigestError, "Unable to update digest"
-		
+			raise DigestError("Unable to update digest")
+
 	def digest(self, data=None):
 		if data is not None:
 			self.update(data)
 		result_buffer = ctypes.create_string_buffer(evp.MAX_MD_SIZE)
 		result_length = ctypes.c_uint()
-		res_code = evp.DigestFinal_ex(self, result_buffer,
+		res_code = evp.DigestFinal_ex(
+			self, result_buffer,
 			result_length)
-		if res_code != 1 :
-			raise DigestError, "Unable to finalize digest"
+		if res_code != 1:
+			raise DigestError("Unable to finalize digest")
 		self.finalized = True
 		result = result_buffer.raw[:result_length.value]
 		# override self.digest to return the same result on subsequent
 		#  calls
 		self.digest = lambda: result
 		return result
+
 
 evp._set_digest_arg_types(DigestType, Digest)
