@@ -29,7 +29,7 @@ class CipherType(ctypes.Structure):
 		assert algorithm in CIPHER_ALGORITHMS, (
 			"Unknown algorithm %(algorithm)s" % vars())
 		assert mode in CIPHER_MODES, "Unknown mode %(mode)s" % vars()
-		res = evp.get_cipherbyname(cipher_name)
+		res = evp.get_cipherbyname(cipher_name.encode('ascii'))
 		if not res:
 			raise CipherError("Unknown cipher: %(cipher_name)s" % vars())
 		res.contents.algorithm, res.contents.mode = algorithm, mode
@@ -44,6 +44,8 @@ class Cipher(ctypes.Structure):
 	finalized = False
 
 	def __init__(self, type, key, iv, encrypt=True):
+		key = key.encode('ascii')
+		iv = iv.encode('ascii')
 		evp.CIPHER_CTX_init(self)
 		engine = None
 		type = self.interpret_type(type)
@@ -79,8 +81,8 @@ class Cipher(ctypes.Structure):
 		"""
 		if self.finalized:
 			raise CipherError("No updates allowed")
-		if not isinstance(data, six.string_types):
-			raise TypeError("A string is expected")
+		if isinstance(data, six.text_type):
+			data = data.encode()
 		out = ctypes.create_string_buffer(len(data) + evp.MAX_BLOCK_LENGTH - 1)
 		out_len = ctypes.c_int()
 
@@ -100,7 +102,7 @@ class Cipher(ctypes.Structure):
 			raise CipherError("Error finalizing cipher")
 		self.out_data.append(out.raw[:out_len.value])
 		self.finalize = lambda: ''.join(self.out_data)
-		return ''.join(self.out_data)
+		return b''.join(self.out_data)
 
 
 _init_args = (

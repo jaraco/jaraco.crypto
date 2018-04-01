@@ -37,7 +37,7 @@ def test_cipher(data_parts):
 	iv = '1111111111111111'
 	params = ('AES-256', 'CBC'), key, iv
 	ce = cipher.Cipher(*params)
-	map(ce.update, data_parts)
+	list(map(ce.update, data_parts))
 	data_enc = ce.finalize()
 	cd = cipher.Cipher(*params, encrypt=False)
-	assert cd.finalize(data_enc) == ''.join(data_parts)
+	assert cd.finalize(data_enc) == ''.join(data_parts).encode()
