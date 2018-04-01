@@ -14,7 +14,7 @@ class DigestType(ctypes.Structure):
 
 	@classmethod
 	def from_name(cls, digest_name):
-		res = evp.get_digestbyname(digest_name)
+		res = evp.get_digestbyname(digest_name.encode('ascii'))
 		if not res:
 			raise DigestError("Unknown Digest: %(digest_name)s" % vars())
 		return res.contents
@@ -34,8 +34,8 @@ class Digest(ctypes.Structure):
 	def update(self, data):
 		if self.finalized:
 			raise DigestError("Digest is finalized; no updates allowed")
-		if not isinstance(data, six.string_types):
-			raise TypeError("A string is expected")
+		if isinstance(data, six.text_type):
+			data = data.encode()
 		result = evp.DigestUpdate(self, data, len(data))
 		if result != 1:
 			raise DigestError("Unable to update digest")

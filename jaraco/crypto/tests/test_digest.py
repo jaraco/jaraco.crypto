@@ -20,7 +20,7 @@ def test_digest():
 	sha512.update("test")
 	assert not sha512.finalized
 	digest_ = sha512.digest()
-	digest_str = binascii.hexlify(digest_)
+	digest_str = binascii.hexlify(digest_).decode('ascii')
 	assert len(digest_) == 64
 	assert digest_str == (
 		"ee26b0dd4af7e749aa1a8ee3c10ae992"
