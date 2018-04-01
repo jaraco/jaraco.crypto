@@ -1,33 +1,33 @@
 import itertools
 
+import pytest
+
 from jaraco.crypto import cipher
 
 
+def algorithm_modes():
+	pairs = itertools.product(
+		cipher.CIPHER_ALGORITHMS,
+		cipher.CIPHER_MODES)
+	for algorithm, mode in pairs:
+		# apparently DES-EDE3-ECB is not a valid mode
+		if (algorithm, mode) == ('DES-EDE3', 'ECB'):
+			continue
+		yield algorithm, mode
+
+
+@pytest.mark.parametrize(
+	['algorithm', 'mode'],
+	algorithm_modes()
+)
 def test_cipher_type(algorithm, mode):
 	# One can pass the algorithm and mode separately or together
 	cipher.CipherType.from_name(algorithm, mode)
 	cipher.CipherType.from_name(algorithm + '-' + mode)
 
 
-def pytest_generate_tests(metafunc):
-	if "data_parts" in metafunc.funcargnames:
-		for i in range(0, 1000, 50):
-			metafunc.addcall(funcargs=dict(
-				data_parts=('a' * i, 'b' * i, 'c' * i)
-			))
-	if metafunc.funcargnames == ['algorithm', 'mode']:
-		pairs = itertools.product(
-			cipher.CIPHER_ALGORITHMS,
-			cipher.CIPHER_MODES)
-		for algorithm, mode in pairs:
-			# apparently DES-EDE3-ECB is not a valid mode
-			if (algorithm, mode) == ('DES-EDE3', 'ECB'):
-				continue
-			metafunc.addcall(funcargs=dict(
-				algorithm=algorithm, mode=mode
-			))
-
-
+@pytest.mark.parametrize('data_parts', [
+	('a' * i, 'b' * i, 'c' * i) for i in range(0, 1000, 50)])
 def test_cipher(data_parts):
 	"""
 	Encrypt and decrypt the data_parts supplied and ensure the source
