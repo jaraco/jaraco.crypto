@@ -6,11 +6,11 @@
 .. image:: https://img.shields.io/travis/jaraco/jaraco.crypto/master.svg
    :target: https://travis-ci.org/jaraco/jaraco.crypto
 
-.. .. image:: https://img.shields.io/appveyor/ci/jaraco/jaraco.crypto/master.svg
-..    :target: https://ci.appveyor.com/project/jaraco/jaraco.crypto/branch/master
+.. image:: https://img.shields.io/appveyor/ci/jaraco/jaraco.crypto/master.svg
+   :target: https://ci.appveyor.com/project/jaraco/jaraco.crypto/branch/master
 
-.. .. image:: https://readthedocs.org/projects/jaracocrypto/badge/?version=latest
-..    :target: https://jaracocrypto.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/jaracocrypto/badge/?version=latest
+   :target: https://jaracocrypto.readthedocs.io/en/latest/?badge=latest
 
 A set of cryptographic routines and utilities
 implemented in pure Python.
