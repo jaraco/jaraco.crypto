@@ -13,10 +13,12 @@ def find_library(lib_name):
 	roots = [
 		'c:\\Program Files\\OpenSSL\\',
 		'/usr/local/opt/openssl/lib/',
+		'/lib/x86_64-linux-gnu/',
 	]
 	ext = (
 		'.dll' if platform.system() == 'Windows' else
 		'.dylib' if platform.system() == 'Darwin' else
+		'.so.1.0.0' if platform.system() == 'Linux' else
 		'.so'
 	)
 	filename = lib_name + ext
