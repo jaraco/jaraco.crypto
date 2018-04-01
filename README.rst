@@ -1,13 +1,19 @@
-=============
-jaraco.crypto
-=============
+.. image:: https://img.shields.io/pypi/v/jaraco.crypto.svg
+   :target: https://pypi.org/project/jaraco.crypto
 
-``jaraco.crypto`` is a set of cryptographic routines and utilities
+.. image:: https://img.shields.io/pypi/pyversions/jaraco.crypto.svg
+
+.. image:: https://img.shields.io/travis/jaraco/jaraco.crypto/master.svg
+   :target: https://travis-ci.org/jaraco/jaraco.crypto
+
+.. .. image:: https://img.shields.io/appveyor/ci/jaraco/jaraco.crypto/master.svg
+..    :target: https://ci.appveyor.com/project/jaraco/jaraco.crypto/branch/master
+
+.. .. image:: https://readthedocs.org/projects/jaracocrypto/badge/?version=latest
+..    :target: https://jaracocrypto.readthedocs.io/en/latest/?badge=latest
+
+A set of cryptographic routines and utilities
 implemented in pure Python.
-
-The project is hosted `on bitbucket
-<https://bitbucket.org/jaraco/jaraco.crypto>`_ and is licenced freely under
-the MIT license.
 
 ================
 Acknowledgements
