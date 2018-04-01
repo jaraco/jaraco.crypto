@@ -58,9 +58,9 @@ lib = find_library('libeay32') or find_library('libssl')
 assert lib, "Couldn't find OpenSSL"
 
 # Define the argtypes and result types for the EVP functions
-map(
+list(map(
 	_reg, 'get_digestbyname DigestInit DigestInit_ex MD_CTX_init '
-	'MD_CTX_create DigestUpdate DigestFinal_ex'.split())
+	'MD_CTX_create DigestUpdate DigestFinal_ex'.split()))
 
 
 def _set_digest_arg_types(DigestType, Digest):
