@@ -20,7 +20,7 @@ Acknowledgements
 ================
 
 Many of the ideas and much of the code has been adapted from or inspired by
-several other projects, including::
+several other projects, including:
 
  - The code repository was originally a fork of the `ctypescrypto project
    <http://code.google.com/p/ctypescrypto/>`_. The code history includes the
