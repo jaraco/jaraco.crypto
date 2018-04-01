@@ -54,7 +54,8 @@ def _reg(name):
 	globals()[name] = getattr(lib, libname)
 
 
-lib = find_library('libeay32')
+lib = find_library('libeay32') or find_library('libssl')
+assert lib, "Couldn't find OpenSSL"
 
 # Define the argtypes and result types for the EVP functions
 map(
