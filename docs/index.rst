@@ -1,5 +1,5 @@
-Welcome to skeleton documentation!
-========================================
+Welcome to jaraco.crypto documentation!
+=======================================
 
 .. toctree::
    :maxdepth: 1
@@ -7,7 +7,37 @@ Welcome to skeleton documentation!
    history
 
 
-.. automodule:: skeleton
+.. automodule:: jaraco.crypto.blowfish
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.cert
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.cipher
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.digest
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.evp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.rand
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.crypto.support
     :members:
     :undoc-members:
     :show-inheritance:
