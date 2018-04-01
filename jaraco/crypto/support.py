@@ -12,6 +12,7 @@ def find_library(lib_name):
 	# todo, allow the target environment to customize this behavior
 	roots = [
 		'c:\\Program Files\\OpenSSL\\',
+		'\\OpenSSL-Win64',
 		'/usr/local/opt/openssl/lib/',
 		'/lib/x86_64-linux-gnu/',
 	]
