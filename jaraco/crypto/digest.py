@@ -2,7 +2,7 @@ import ctypes
 
 import six
 
-import evp
+from . import evp
 
 
 class DigestError(Exception):

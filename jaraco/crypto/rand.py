@@ -2,7 +2,7 @@ import ctypes
 
 import six
 
-from evp import lib
+from .evp import lib
 
 
 class RandError(Exception):
