@@ -1,3 +1,8 @@
+1.1.1
+=====
+
+Minor package cleanup. Run tests on appveyor.
+
 1.1
 ===
 
