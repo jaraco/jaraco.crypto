@@ -1,13 +1,20 @@
 import time
 import sys
+import datetime
 
 import itsdangerous
-import utc
-from backports.datetime_timestamp import timestamp
 
 
 class EpochOffsetSigner(itsdangerous.TimestampSigner):
-    EPOCH = timestamp(utc.datetime(2011, 1, 1))
+    """
+    >>> EpochOffsetSigner.EPOCH
+    1293840000.0
+    """
+    try:
+        EPOCH = datetime.datetime(
+            2011, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
+    except AttributeError:
+        EPOCH = 1293840000.0
 
     def get_timestamp(self):
         return int(time.time() - self.EPOCH)
