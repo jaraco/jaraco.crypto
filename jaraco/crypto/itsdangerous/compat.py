@@ -12,13 +12,19 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
     def get_timestamp(self):
         return int(time.time() - self.EPOCH)
 
+    def timestamp_to_datetime(self, ts):
+        return super(EpochOffsetSigner, self).timestamp_to_datetime(
+            ts + self.EPOCH)
+
 
 def unsign(signer, blob, **kwargs):
     """
     >>> from freezegun import freeze_time
-    >>> frozen = freeze_time('2019-01-23T18:45Z')
+    >>> frozen = freeze_time('2019-01-23T18:45')
 
-    This signed value was signed by itsdangerous 0.24
+    This signed value was signed by itsdangerous 0.24 at
+    2019-01-23 18:44:58 UTC
+
     >>> signed = 'my string.DypHqg.FowpFfFG-kYA7P-qujGwVt9oJCo'
     >>> signer = itsdangerous.TimestampSigner(b'secret-key')
     >>> _, orig_ts = signer.unsign(signed, return_timestamp=True)
@@ -34,8 +40,21 @@ def unsign(signer, blob, **kwargs):
     ...     signer, signed, max_age=5, return_timestamp=True)
     >>> res
     b'my string'
-    >>> ts == orig_ts
-    True
+    >>> ts
+    FakeDatetime(2019, 1, 23, 23, 44, 58)
+
+    Note that although you'd expect the signature to be expired,
+    it's not.
+
+    >>> freeze_time('2019-01-23T18:46')(unsign)(signer, signed, max_age=5)
+    b'my string'
+
+    It does expire in the future, though.
+
+    >>> freeze_time('2019-01-24T18:44:58')(unsign)(signer, signed, max_age=5)
+    Traceback (most recent call last):
+    ...
+    itsdangerous.exc.SignatureExpired: Signature age ... > 5 seconds
     """
     try:
         return signer.unsign(blob, **kwargs)
