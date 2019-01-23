@@ -13,6 +13,16 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
 
 
 def unsign(signer, blob, **kwargs):
+    """
+    >>> from freezegun import freeze_time
+    >>> frozen = freeze_time('2019-01-23T18:52:55Z')
+
+    This signed value was signed by itsdangerous 0.24
+    >>> signed = 'my string.DypHqg.FowpFfFG-kYA7P-qujGwVt9oJCo'
+    >>> signer = itsdangerous.TimestampSigner(b'secret-key')
+    >>> frozen(unsign)(signer, signed, max_age=5)
+    b'my string'
+    """
     try:
         return signer.unsign(blob, **kwargs)
     except itsdangerous.exc.SignatureExpired:
