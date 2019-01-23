@@ -1,3 +1,10 @@
+"""
+Compatibility shim for timestamp compatibility between
+itsdangerous 0.24 and 1.x. See `itsdangerous 120
+<https://github.com/pallets/itsdangerous/issues/120>`_
+for motivation and details.
+"""
+
 import time
 import sys
 import datetime
@@ -26,6 +33,8 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
 
 def unsign(signer, blob, **kwargs):
     """
+    Prepare to freeze time; create frozen decorator
+
     >>> from freezegun import freeze_time
     >>> frozen = freeze_time('2019-01-23T18:45')
 
@@ -43,6 +52,10 @@ def unsign(signer, blob, **kwargs):
     Traceback (most recent call last):
     ...
     itsdangerous.exc.SignatureExpired: Signature age 1293840002 > 5 seconds
+
+    But if you call this compatibility wrapper instead, you get the
+    desired result.
+
     >>> res, ts = frozen(unsign)(
     ...     signer, signed, max_age=5, return_timestamp=True)
     >>> res
