@@ -1,5 +1,6 @@
 import datetime
 import time
+import sys
 
 import itsdangerous
 from backports.datetime_timestamp import timestamp
@@ -41,3 +42,7 @@ def unsign(signer, blob, **kwargs):
     except itsdangerous.exc.SignatureExpired:
         compat_signer = EpochOffsetSigner(signer.secret_key)
         return compat_signer.unsign(blob, **kwargs)
+
+
+if sys.version_info < (3,):
+    unsign.__doc__ = unsign.__doc__.replace('itsdangerous.exc.', '')
