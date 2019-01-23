@@ -1,3 +1,10 @@
+2.1
+===
+
+Added ``jaraco.crypto.itsdangerous.compat`` module, providing
+the `compatibility shim presented in pallets/itsdangerous 120
+<https://github.com/pallets/itsdangerous/issues/120#issuecomment-456913331>`_.
+
 2.0
 ===
 
