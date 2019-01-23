@@ -1,13 +1,13 @@
-import datetime
 import time
 import sys
 
 import itsdangerous
+from tempora import utc
 from backports.datetime_timestamp import timestamp
 
 
 class EpochOffsetSigner(itsdangerous.TimestampSigner):
-    EPOCH = timestamp(datetime.datetime(2011, 1, 1))
+    EPOCH = timestamp(utc.datetime(2011, 1, 1))
 
     def get_timestamp(self):
         return int(time.time() - self.EPOCH)
@@ -41,20 +41,14 @@ def unsign(signer, blob, **kwargs):
     >>> res
     b'my string'
     >>> ts
-    FakeDatetime(2019, 1, 23, 23, 44, 58)
+    FakeDatetime(2019, 1, 23, 18, 44, 58)
 
-    Note that although you'd expect the signature to be expired,
-    it's not.
+    And the signature does show as expired when it's supposed to be.
 
-    >>> freeze_time('2019-01-23T18:46')(unsign)(signer, signed, max_age=5)
-    b'my string'
-
-    It does expire in the future, though.
-
-    >>> freeze_time('2019-01-24T18:44:58')(unsign)(signer, signed, max_age=5)
+    >>> freeze_time('2019-01-23T18:45:58')(unsign)(signer, signed, max_age=5)
     Traceback (most recent call last):
     ...
-    itsdangerous.exc.SignatureExpired: Signature age ... > 5 seconds
+    itsdangerous.exc.SignatureExpired: Signature age 60 > 5 seconds
     """
     try:
         return signer.unsign(blob, **kwargs)
