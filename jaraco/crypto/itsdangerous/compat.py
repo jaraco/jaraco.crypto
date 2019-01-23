@@ -60,7 +60,8 @@ def unsign(signer, blob, **kwargs):
     try:
         return signer.unsign(blob, **kwargs)
     except itsdangerous.exc.SignatureExpired:
-        compat_signer = EpochOffsetSigner(signer.secret_key)
+        compat_signer = EpochOffsetSigner(None)
+        vars(compat_signer).update(vars(signer))
         return compat_signer.unsign(blob, **kwargs)
 
 
