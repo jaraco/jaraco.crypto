@@ -2,7 +2,7 @@ import time
 import sys
 
 import itsdangerous
-from tempora import utc
+import utc
 from backports.datetime_timestamp import timestamp
 
 
