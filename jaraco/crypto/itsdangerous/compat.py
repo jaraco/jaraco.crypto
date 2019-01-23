@@ -2,10 +2,11 @@ import datetime
 import time
 
 import itsdangerous
+from backports.datetime_timestamp import timestamp
 
 
 class EpochOffsetSigner(itsdangerous.TimestampSigner):
-    EPOCH = datetime.datetime(2011, 1, 1).timestamp()
+    EPOCH = timestamp(datetime.datetime(2011, 1, 1))
 
     def get_timestamp(self):
         return int(time.time() - self.EPOCH)
