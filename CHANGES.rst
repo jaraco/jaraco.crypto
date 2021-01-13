@@ -1,3 +1,8 @@
+v3.0.0
+======
+
+Updated to run against OpenSSL 1.1.
+
 2.1
 ===
 
