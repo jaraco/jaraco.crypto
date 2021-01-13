@@ -15,8 +15,6 @@ from .support import find_library
 get_digestbyname = None
 DigestInit = None
 DigestInit_ex = None
-MD_CTX_init = None
-MD_CTX_create = None
 DigestUpdate = None
 DigestFinal_ex = None
 get_cipherbyname = None
@@ -67,8 +65,8 @@ assert lib, "Couldn't find OpenSSL"
 list(
     map(
         _reg,
-        'get_digestbyname DigestInit DigestInit_ex MD_CTX_init '
-        'MD_CTX_create DigestUpdate DigestFinal_ex'.split(),
+        'get_digestbyname DigestInit DigestInit_ex '
+        'DigestUpdate DigestFinal_ex'.split(),
     )
 )
 
@@ -82,8 +80,6 @@ def _set_digest_arg_types(DigestType, Digest):
     )
     DigestInit_ex.argtypes = lib.EVP_DigestInit.argtypes + (c_void_p,)
     DigestInit_ex.restype = c_int
-    MD_CTX_init.argtypes = (POINTER(Digest),)
-    MD_CTX_create.restype = POINTER(Digest)
     DigestUpdate.argtypes = POINTER(Digest), c_char_p, c_int
     DigestUpdate.restype = c_int
     DigestFinal_ex.argtypes = (
@@ -135,8 +131,6 @@ _cipher_context_fields = [
     ('final', c_char * MAX_BLOCK_LENGTH),
 ]
 
-CIPHER_CTX_init = lib.EVP_CIPHER_CTX_init
-
 # EncryptInit_ex = lib.EVP_EncryptInit_ex
 # DecryptInit_ex = lib.EVP_DecryptInit_ex
 # ...
@@ -149,7 +143,3 @@ for ed, method in itertools.product(
     func = getattr(lib, lib_name)
     func.restype = c_int
     globals()[local_name] = func
-
-# Initialize the engines
-lib.OpenSSL_add_all_digests()
-lib.OpenSSL_add_all_ciphers()

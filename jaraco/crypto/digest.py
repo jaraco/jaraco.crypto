@@ -26,7 +26,6 @@ class Digest(ctypes.Structure):
 
     def __init__(self, digest_type):
         self.digest_type = digest_type
-        evp.MD_CTX_init(self)
         result = evp.DigestInit_ex(self, digest_type, None)
         if result == 0:
             raise DigestError("Unable to initialize digest")

@@ -49,4 +49,3 @@ def seed(data, entropy=None):
 
 
 status = lib.RAND_status
-cleanup = lib.RAND_cleanup

@@ -47,7 +47,6 @@ class Cipher(ctypes.Structure):
     def __init__(self, type, key, iv, encrypt=True):
         key = key.encode('ascii')
         iv = iv.encode('ascii')
-        evp.CIPHER_CTX_init(self)
         engine = None
         type = self.interpret_type(type)
         res = evp.CipherInit_ex(self, type, engine, key, iv, encrypt)
@@ -134,4 +133,3 @@ evp.EncryptUpdate.argtypes = (
 evp.EncryptFinal_ex.argtypes = (
     evp.DecryptFinal_ex.argtypes
 ) = evp.CipherFinal_ex.argtypes = _final_args
-evp.CIPHER_CTX_init.argtypes = (ctypes.POINTER(Cipher),)
