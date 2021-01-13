@@ -17,9 +17,9 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
     >>> EpochOffsetSigner.EPOCH
     1293840000.0
     """
+
     try:
-        EPOCH = datetime.datetime(
-            2011, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
+        EPOCH = datetime.datetime(2011, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
     except AttributeError:
         EPOCH = 1293840000.0
 
@@ -27,8 +27,7 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
         return int(time.time() - self.EPOCH)
 
     def timestamp_to_datetime(self, ts):
-        return super(EpochOffsetSigner, self).timestamp_to_datetime(
-            ts + self.EPOCH)
+        return super(EpochOffsetSigner, self).timestamp_to_datetime(ts + self.EPOCH)
 
 
 def unsign(signer, blob, **kwargs):

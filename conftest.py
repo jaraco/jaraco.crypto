@@ -4,17 +4,21 @@ import six
 
 
 collect_ignore = [
-	'certutil.py',
+    'certutil.py',
 ]
 
 
 if platform.system() != 'Windows':
-	collect_ignore.extend([
-		'jaraco/crypto/cert.py',
-	])
+    collect_ignore.extend(
+        [
+            'jaraco/crypto/cert.py',
+        ]
+    )
 
 
 if six.PY3:
-	collect_ignore.extend([
-		'jaraco/crypto/blowfish.py',
-	])
+    collect_ignore.extend(
+        [
+            'jaraco/crypto/blowfish.py',
+        ]
+    )
