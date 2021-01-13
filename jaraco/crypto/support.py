@@ -21,7 +21,7 @@ def find_library(lib_name):
         if platform.system() == 'Windows'
         else '.dylib'
         if platform.system() == 'Darwin'
-        else '.so.1.0.0'
+        else '.so.1.1'
         if platform.system() == 'Linux'
         else '.so'
     )
