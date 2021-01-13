@@ -37,7 +37,7 @@ class CipherType(ctypes.Structure):
         return res.contents
 
 
-evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)
+evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)  # type: ignore
 
 
 class Cipher(ctypes.Structure):
@@ -124,12 +124,12 @@ _final_args = (
     ctypes.c_char_p,
     ctypes.POINTER(ctypes.c_int),
 )
-evp.EncryptInit_ex.argtypes = (
-    evp.DecryptInit_ex.argtypes
-) = evp.CipherInit_ex.argtypes = _init_args
-evp.EncryptUpdate.argtypes = (
-    evp.DecryptUpdate.argtypes
-) = evp.CipherUpdate.argtypes = _update_args
-evp.EncryptFinal_ex.argtypes = (
-    evp.DecryptFinal_ex.argtypes
-) = evp.CipherFinal_ex.argtypes = _final_args
+evp.EncryptInit_ex.argtypes = (  # type: ignore
+    evp.DecryptInit_ex.argtypes  # type: ignore
+) = evp.CipherInit_ex.argtypes = _init_args  # type: ignore
+evp.EncryptUpdate.argtypes = (  # type: ignore
+    evp.DecryptUpdate.argtypes  # type: ignore
+) = evp.CipherUpdate.argtypes = _update_args  # type: ignore
+evp.EncryptFinal_ex.argtypes = (  # type: ignore
+    evp.DecryptFinal_ex.argtypes  # type: ignore
+) = evp.CipherFinal_ex.argtypes = _final_args  # type: ignore

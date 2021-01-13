@@ -91,7 +91,7 @@ def _set_digest_arg_types(DigestType, Digest):
 
 
 _reg('get_cipherbyname')
-get_cipherbyname.argtypes = (c_char_p,)
+get_cipherbyname.argtypes = (c_char_p,)  # type: ignore
 
 _cipher_fields = [
     ('nid', c_int),
