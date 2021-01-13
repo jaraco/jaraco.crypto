@@ -1,13 +1,18 @@
 .. image:: https://img.shields.io/pypi/v/jaraco.crypto.svg
-   :target: https://pypi.org/project/jaraco.crypto
+   :target: `PyPI link`_
 
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.crypto.svg
+   :target: `PyPI link`_
 
-.. image:: https://img.shields.io/travis/jaraco/jaraco.crypto/master.svg
-   :target: https://travis-ci.org/jaraco/jaraco.crypto
+.. _PyPI link: https://pypi.org/project/jaraco.crypto
 
-.. image:: https://img.shields.io/appveyor/ci/jaraco/jaraco-crypto/master.svg
-   :target: https://ci.appveyor.com/project/jaraco/jaraco-crypto/branch/master
+.. image:: https://github.com/jaraco/jaraco.crypto/workflows/Automated%20Tests/badge.svg
+   :target: https://github.com/jaraco/jaraco.crypto/actions?query=workflow%3A%22Automated+Tests%22
+   :alt: Automated Tests
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Code style: Black
 
 .. image:: https://readthedocs.org/projects/jaracocrypto/badge/?version=latest
    :target: https://jaracocrypto.readthedocs.io/en/latest/?badge=latest
