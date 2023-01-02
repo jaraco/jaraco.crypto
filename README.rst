@@ -14,7 +14,7 @@
 .. image:: https://readthedocs.org/projects/jaracocrypto/badge/?version=latest
    :target: https://jaracocrypto.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://img.shields.io/badge/skeleton-2022-informational
+.. image:: https://img.shields.io/badge/skeleton-2023-informational
    :target: https://blog.jaraco.com/skeleton
 
 A set of cryptographic routines and utilities
