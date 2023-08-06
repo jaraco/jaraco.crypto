@@ -1,4 +1,4 @@
-import py.test
+import pytest
 
 from jaraco.crypto import rand
 
@@ -16,7 +16,7 @@ def test_pseudo_bytes():
 
 
 def test_seed():
-    py.test.skip("This fails, why?")
+    pytest.skip("This fails, why?")
     seed = 'bunch of bytes' * 1000
     rand.cleanup()
     rand.seed(seed)

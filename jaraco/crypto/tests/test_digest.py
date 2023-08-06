@@ -1,6 +1,6 @@
 import binascii
 
-import py.test
+import pytest
 
 from jaraco.crypto import digest
 
@@ -11,7 +11,7 @@ def test_load_valid_digest_type_by_name():
 
 def test_load_invalid_digest_type_by_name():
     # dne is Does Not Exist
-    py.test.raises(digest.DigestError, digest.DigestType.from_name, 'sha-dne')
+    pytest.raises(digest.DigestError, digest.DigestType.from_name, 'sha-dne')
 
 
 def test_digest():
