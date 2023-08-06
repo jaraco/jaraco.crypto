@@ -24,6 +24,12 @@ class Digest(ctypes.Structure):
     _fields_ = evp._digest_context_fields
     finalized = False
 
+    def __new__(cls,*a,**kw):
+        return evp.lib.EVP_MD_CTX_new().contents
+
+    def __del__(self):
+        evp.lib.EVP_MD_CTX_free(self)
+
     def __init__(self, digest_type):
         self.digest_type = digest_type
         result = evp.DigestInit_ex(self, digest_type, None)

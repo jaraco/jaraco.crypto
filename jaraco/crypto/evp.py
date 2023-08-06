@@ -88,6 +88,12 @@ def _set_digest_arg_types(DigestType, Digest):
         POINTER(c_uint),
     )
     DigestFinal_ex.restype = c_int
+    lib.EVP_MD_CTX_new.restype = POINTER(Digest)
+    lib.EVP_MD_CTX_new.argtypes = None
+    lib.EVP_MD_CTX_free.restype = None
+    lib.EVP_MD_CTX_free.argtypes = (POINTER(Digest),)
+
+
 
 
 _reg('get_cipherbyname')

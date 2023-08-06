@@ -44,6 +44,12 @@ class Cipher(ctypes.Structure):
     _fields_ = evp._cipher_context_fields
     finalized = False
 
+    def __new__(cls,*a,**kw):
+        return evp.lib.EVP_CIPHER_CTX_new().contents
+    
+    def __del__(self):
+        evp.lib.EVP_CIPHER_CTX_free(self)
+
     def __init__(self, type, key, iv, encrypt=True):
         key = key.encode('ascii')
         iv = iv.encode('ascii')
@@ -133,3 +139,9 @@ evp.EncryptUpdate.argtypes = (  # type: ignore
 evp.EncryptFinal_ex.argtypes = (  # type: ignore
     evp.DecryptFinal_ex.argtypes  # type: ignore
 ) = evp.CipherFinal_ex.argtypes = _final_args  # type: ignore
+
+evp.lib.EVP_CIPHER_CTX_new.argtypes = None
+evp.lib.EVP_CIPHER_CTX_new.restype = ctypes.POINTER(Cipher)
+
+evp.lib.EVP_CIPHER_CTX_free.argtypes = (ctypes.POINTER(Cipher),)
+evp.lib.EVP_CIPHER_CTX_free.restype = None
