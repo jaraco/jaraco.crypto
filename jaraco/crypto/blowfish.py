@@ -167,7 +167,6 @@ class Blowfish:
     modulus = long(2) ** 32
 
     def __init__(self, key):
-
         if not key or len(key) < 8 or len(key) > 56:
             raise RuntimeError(
                 "Attempted to initialize Blowfish cipher with "

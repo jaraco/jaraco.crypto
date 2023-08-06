@@ -24,7 +24,7 @@ class Digest(ctypes.Structure):
     _fields_ = evp._digest_context_fields
     finalized = False
 
-    def __new__(cls,*a,**kw):
+    def __new__(cls, *a, **kw):
         return evp.lib.EVP_MD_CTX_new().contents
 
     def __del__(self):

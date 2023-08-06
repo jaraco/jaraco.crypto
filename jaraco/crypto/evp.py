@@ -94,8 +94,6 @@ def _set_digest_arg_types(DigestType, Digest):
     lib.EVP_MD_CTX_free.argtypes = (POINTER(Digest),)
 
 
-
-
 _reg('get_cipherbyname')
 get_cipherbyname.argtypes = (c_char_p,)  # type: ignore
 
