@@ -6,7 +6,6 @@ for motivation and details.
 """
 
 import time
-import sys
 import datetime
 
 import itsdangerous
@@ -27,7 +26,7 @@ class EpochOffsetSigner(itsdangerous.TimestampSigner):
         return int(time.time() - self.EPOCH)
 
     def timestamp_to_datetime(self, ts):
-        return super(EpochOffsetSigner, self).timestamp_to_datetime(ts + self.EPOCH)
+        return super().timestamp_to_datetime(ts + self.EPOCH)
 
 
 def unsign(signer, blob, **kwargs):
@@ -75,7 +74,3 @@ def unsign(signer, blob, **kwargs):
         compat_signer = EpochOffsetSigner(None)
         vars(compat_signer).update(vars(signer))
         return compat_signer.unsign(blob, **kwargs)
-
-
-if sys.version_info < (3,):
-    unsign.__doc__ = unsign.__doc__.replace('itsdangerous.exc.', '')

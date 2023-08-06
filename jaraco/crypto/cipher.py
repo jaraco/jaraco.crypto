@@ -1,6 +1,5 @@
 import ctypes
 
-import six
 
 from . import evp
 
@@ -87,7 +86,7 @@ class Cipher(ctypes.Structure):
         """
         if self.finalized:
             raise CipherError("No updates allowed")
-        if isinstance(data, six.text_type):
+        if isinstance(data, str):
             data = data.encode()
         out = ctypes.create_string_buffer(len(data) + evp.MAX_BLOCK_LENGTH - 1)
         out_len = ctypes.c_int()

@@ -1,6 +1,5 @@
 import platform
 
-import six
 
 
 collect_ignore = [
@@ -16,9 +15,8 @@ if platform.system() != 'Windows':
     )
 
 
-if six.PY3:
-    collect_ignore.extend(
-        [
-            'jaraco/crypto/blowfish.py',
-        ]
-    )
+collect_ignore.extend(
+    [
+        'jaraco/crypto/blowfish.py',
+    ]
+)

@@ -1,6 +1,5 @@
 import ctypes
 
-import six
 
 from .evp import lib
 
@@ -37,7 +36,7 @@ lib.RAND_add.argtypes = ctypes.c_char_p, ctypes.c_int, ctypes.c_double
 
 
 def seed(data, entropy=None):
-    if not isinstance(data, six.string_types):
+    if not isinstance(data, str):
         raise TypeError("data must be a string")
     params = [data, len(data)]
     if entropy:

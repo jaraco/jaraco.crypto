@@ -1,6 +1,5 @@
 import ctypes
 
-import six
 
 from . import evp
 
@@ -39,7 +38,7 @@ class Digest(ctypes.Structure):
     def update(self, data):
         if self.finalized:
             raise DigestError("Digest is finalized; no updates allowed")
-        if isinstance(data, six.text_type):
+        if isinstance(data, str):
             data = data.encode()
         result = evp.DigestUpdate(self, data, len(data))
         if result != 1:

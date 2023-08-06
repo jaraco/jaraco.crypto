@@ -94,12 +94,11 @@ True
 import struct
 import types
 
-import six
 
 __author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
 
 
-long = six.integer_types[0]
+long = (int,)[0]
 
 
 class Blowfish:
