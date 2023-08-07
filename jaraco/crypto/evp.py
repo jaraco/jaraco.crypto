@@ -34,7 +34,7 @@ _digest_type_fields = [
     ('sign', c_void_p),
     ('verify', c_void_p),
     ('required_pkey_type', c_int * 5),
-    ('block size', c_int),
+    ('block_size', c_int),
     ('ctx_size', c_int),
     ('md_ctrl', c_void_p),
 ]
