@@ -5,7 +5,7 @@ import subprocess
 
 
 def find_lib_Linux(lib_name):
-    lines = subprocess.check_output(['ldconfig', '-p'], text=True)
+    lines = subprocess.check_output(['ldconfig', '-p'], text=True, encoding='utf-8')
 
     for line in lines.splitlines():
         lib, _, rest = line.strip().partition(' ')
