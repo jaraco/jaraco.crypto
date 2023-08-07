@@ -1,7 +1,6 @@
 import platform
 
 
-
 collect_ignore = [
     'certutil.py',
 ]
