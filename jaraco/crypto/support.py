@@ -5,10 +5,7 @@ import subprocess
 
 
 def find_lib_Linux(lib_name):
-    try:
-        lines = subprocess.check_output(['ldconfig', '-p'], text=True)
-    except TypeError:
-        lines = subprocess.check_output(['ldconfig', '-p'], text=True)
+    lines = subprocess.check_output(['ldconfig', '-p'], text=True)
 
     for line in lines.splitlines():
         lib, _, rest = line.strip().partition(' ')
