@@ -1,5 +1,7 @@
 import ctypes
 
+from .support import find_library
+
 
 class Stack(ctypes.Structure):
     _fields_ = [
@@ -41,34 +43,36 @@ class BIO(ctypes.Structure):
 FILETYPE_PEM = 1
 FILETYPE_ASN1 = 2
 
-libeay32 = ctypes.windll.libeay32
-libeay32.BN_bn2hex.restype = ctypes.c_char_p
+lib = find_library('libeay32') or find_library('libssl')
+assert lib, "Couldn't find OpenSSL"
+
+lib.BN_bn2hex.restype = ctypes.c_char_p
 
 
 class X509(ctypes.Structure):
     _fields_ = []
 
     def get_serial_number(self):
-        asn1_i = libeay32.X509_get_serialNumber(ctypes.byref(self))
-        bignum = libeay32.ASN1_INTEGER_to_BN(asn1_i, None)
+        asn1_i = lib.X509_get_serialNumber(ctypes.byref(self))
+        bignum = lib.ASN1_INTEGER_to_BN(asn1_i, None)
         try:
-            hex = libeay32.BN_bn2hex(bignum)
+            hex = lib.BN_bn2hex(bignum)
             result = int(hex, 16)
         finally:
-            libeay32.BN_free(bignum)
+            lib.BN_free(bignum)
         return result
 
 
 def load_certificate(type, data):
-    bio = libeay32.BIO_new_mem_buf(data, len(data))
+    bio = lib.BIO_new_mem_buf(data, len(data))
 
     try:
         if type == FILETYPE_PEM:
-            cert = libeay32.PEM_read_bio_X509(bio, None, None, None)
+            cert = lib.PEM_read_bio_X509(bio, None, None, None)
         else:
             raise ValueError("Unsupported type")
     finally:
-        libeay32.BIO_free(bio)
+        lib.BIO_free(bio)
     if not cert:
         raise Exception("Exception loading cert")
     return ctypes.cast(cert, ctypes.POINTER(X509)).contents
