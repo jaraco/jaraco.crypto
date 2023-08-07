@@ -33,6 +33,7 @@ def find_lib_default(lib_name):
         'c:\\Program Files\\OpenSSL\\',
         '\\OpenSSL-Win64',
         '/usr/local/opt/openssl/lib/',
+        '/opt/homebrew/lib/',
     ]
     ext = (
         '.dll'
