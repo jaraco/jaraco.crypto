@@ -1,3 +1,18 @@
+v3.1.0
+======
+
+Features
+--------
+
+- Require Python 3.8 or later.
+
+
+Bugfixes
+--------
+
+- Fixed context initialization fix. (#3)
+
+
 v3.0.1
 ======
 
