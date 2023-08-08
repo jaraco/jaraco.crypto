@@ -58,8 +58,8 @@ def unsign(signer, blob, **kwargs):
     ...     signer, signed, max_age=5, return_timestamp=True)
     >>> res
     b'my string'
-    >>> ts
-    FakeDatetime(2019, 1, 23, 18, 44, 58)
+    >>> ts == datetime.datetime(2019, 1, 23, 18, 44, 58)
+    True
 
     And the signature does show as expired when it's supposed to be.
 
