@@ -78,7 +78,12 @@ def _set_digest_arg_types(DigestType, Digest):
         POINTER(Digest),
         POINTER(DigestType),
     )
-    DigestInit_ex.argtypes = lib.EVP_DigestInit.argtypes + (c_void_p,)
+    DigestInit_ex.argtypes = tuple(
+        itertools.chain(
+            lib.EVP_DigestInit.argtypes,
+            (c_void_p,),
+        )
+    )
     DigestInit_ex.restype = c_int
     DigestUpdate.argtypes = POINTER(Digest), c_char_p, c_int
     DigestUpdate.restype = c_int
