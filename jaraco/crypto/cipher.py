@@ -103,7 +103,7 @@ class Cipher(ctypes.Structure):
         out = ctypes.create_string_buffer(evp.MAX_BLOCK_LENGTH)
         out_len = ctypes.c_int()
         res = evp.CipherFinal_ex(self, out, out_len)
-        if not res == 1:
+        if res != 1:
             raise CipherError("Error finalizing cipher")
         self.out_data.append(out.raw[: out_len.value])
         self.finalize = lambda: ''.join(self.out_data)
