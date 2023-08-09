@@ -1243,20 +1243,20 @@ class Blowfish:
             index = index + 4
 
         # For the chaining process
-        l, r = 0, 0
+        left, right = 0, 0
 
         # Begin chain replacing the p-boxes
         for i in range(0, len(self.p_boxes), 2):
-            l, r = self.cipher(l, r, self.ENCRYPT)
-            self.p_boxes[i] = l
-            self.p_boxes[i + 1] = r
+            left, right = self.cipher(left, right, self.ENCRYPT)
+            self.p_boxes[i] = left
+            self.p_boxes[i + 1] = right
 
         # Chain replace the s-boxes
         for i in range(len(self.s_boxes)):
             for j in range(0, len(self.s_boxes[i]), 2):
-                l, r = self.cipher(l, r, self.ENCRYPT)
-                self.s_boxes[i][j] = l
-                self.s_boxes[i][j + 1] = r
+                left, right = self.cipher(left, right, self.ENCRYPT)
+                self.s_boxes[i][j] = left
+                self.s_boxes[i][j + 1] = right
 
         self.initCTR()
 
