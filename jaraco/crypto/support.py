@@ -5,10 +5,12 @@ import subprocess
 import glob
 
 
-def find_lib_Linux(lib_name):
-    lines = subprocess.check_output(['ldconfig', '-p'], text=True, encoding='utf-8')
+def _run_cmd(cmd):
+    return subprocess.check_output(cmd.split(' '), text=True, encoding='utf-8')
 
-    for line in lines.splitlines():
+
+def find_lib_Linux(lib_name):
+    for line in _run_cmd('ldconfig -p').splitlines():
         lib, _, rest = line.strip().partition(' ')
         _, _, path = rest.rpartition(' ')
         found_name, _, _ = lib.partition('.')
