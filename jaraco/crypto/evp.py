@@ -1,4 +1,5 @@
 import itertools
+import ctypes
 from ctypes import (
     c_int,
     c_ulong,
@@ -152,3 +153,10 @@ for ed, method in itertools.product(
     func = getattr(lib, lib_name)
     func.restype = c_int
     globals()[local_name] = func
+
+
+def get_error():
+    err = lib.ERR_get_error()
+    msg = ctypes.create_string_buffer(1024)
+    lib.ERR_error_string(err, msg)
+    return msg.value.decode()

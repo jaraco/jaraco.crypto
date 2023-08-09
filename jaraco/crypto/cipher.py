@@ -56,7 +56,7 @@ class Cipher(ctypes.Structure):
         type = self.interpret_type(type)
         res = evp.CipherInit_ex(self, type, engine, key, iv, encrypt)
         if res == 0:
-            raise CipherError("Unable to initialize cipher")
+            raise CipherError(f"Unable to initialize cipher: {evp.get_error()}")
         self.out_data = []
 
     @staticmethod
@@ -93,7 +93,7 @@ class Cipher(ctypes.Structure):
 
         res = evp.CipherUpdate(self, out, out_len, data, len(data))
         if res != 1:
-            raise CipherError("Error updating cipher")
+            raise CipherError(f"Error updating cipher: {evp.get_error()}")
         self.out_data.append(out.raw[: out_len.value])
 
     def finalize(self, data=None):
@@ -104,7 +104,7 @@ class Cipher(ctypes.Structure):
         out_len = ctypes.c_int()
         res = evp.CipherFinal_ex(self, out, out_len)
         if res != 1:
-            raise CipherError("Error finalizing cipher")
+            raise CipherError(f"Error finalizing cipher: {evp.get_error()}")
         self.out_data.append(out.raw[: out_len.value])
         self.finalize = lambda: ''.join(self.out_data)
         return b''.join(self.out_data)
