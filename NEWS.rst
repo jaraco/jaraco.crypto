@@ -1,3 +1,12 @@
+v3.2.0
+======
+
+Features
+--------
+
+- Updated blowfish implementation for Python 3
+
+
 v3.1.1
 ======
 
