@@ -50,7 +50,7 @@ lib.BN_bn2hex.restype = ctypes.c_char_p
 
 
 class X509(ctypes.Structure):
-    _fields_ = []
+    _fields_ = []  # type: ignore
 
     def get_serial_number(self):
         asn1_i = lib.X509_get_serialNumber(ctypes.byref(self))
