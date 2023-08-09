@@ -12,10 +12,3 @@ if platform.system() != 'Windows':
             'jaraco/crypto/cert.py',
         ]
     )
-
-
-collect_ignore.extend(
-    [
-        'jaraco/crypto/blowfish.py',
-    ]
-)

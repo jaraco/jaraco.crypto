@@ -69,30 +69,29 @@ Test block encrypt
 
 >>> text = "testtext"
 
->>> crypted = cipher.encrypt(text)
+>>> crypted = cipher.encrypt(text.encode())
 >>> crypted == text
 False
->>> decrypted = cipher.decrypt(crypted)
->>> decrypted == text
-True
+>>> decrypted = cipher.decrypt(crypted).decode()
+>>> decrypted
+'testtext'
 
 Test CTR encrypt
 
 >>> text = "If the offer's shunned, you might as well be walking on the sun"
 
 >>> cipher.initCTR()
->>> crypted = cipher.encryptCTR(text)
+>>> crypted = cipher.encryptCTR(text.encode())
 >>> crypted == text
 False
 >>> cipher.initCTR()
->>> decrypted = cipher.decryptCTR(crypted)
->>> decrypted == text
-True
+>>> decrypted = cipher.decryptCTR(crypted).decode()
+>>> decrypted
+"If the offer's shunned, you might as well be walking on the sun"
 
 """
 
 import struct
-import types
 
 
 __author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
@@ -1302,30 +1301,20 @@ class Blowfish:
             )
 
         # Use big endianess since that's what everyone else uses
-        xl = (
-            ord(data[3])
-            | (ord(data[2]) << 8)
-            | (ord(data[1]) << 16)
-            | (ord(data[0]) << 24)
-        )
-        xr = (
-            ord(data[7])
-            | (ord(data[6]) << 8)
-            | (ord(data[5]) << 16)
-            | (ord(data[4]) << 24)
-        )
+        xl = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
+        xr = data[7] | (data[6] << 8) | (data[5] << 16) | (data[4] << 24)
 
         cl, cr = self.cipher(xl, xr, self.ENCRYPT)
-        chars = ''.join(
+        chars = bytes(
             [
-                chr((cl >> 24) & 0xFF),
-                chr((cl >> 16) & 0xFF),
-                chr((cl >> 8) & 0xFF),
-                chr(cl & 0xFF),
-                chr((cr >> 24) & 0xFF),
-                chr((cr >> 16) & 0xFF),
-                chr((cr >> 8) & 0xFF),
-                chr(cr & 0xFF),
+                (cl >> 24) & 0xFF,
+                (cl >> 16) & 0xFF,
+                (cl >> 8) & 0xFF,
+                cl & 0xFF,
+                (cr >> 24) & 0xFF,
+                (cr >> 16) & 0xFF,
+                (cr >> 8) & 0xFF,
+                cr & 0xFF,
             ]
         )
         return chars
@@ -1337,30 +1326,20 @@ class Blowfish:
             )
 
         # Use big endianess since that's what everyone else uses
-        cl = (
-            ord(data[3])
-            | (ord(data[2]) << 8)
-            | (ord(data[1]) << 16)
-            | (ord(data[0]) << 24)
-        )
-        cr = (
-            ord(data[7])
-            | (ord(data[6]) << 8)
-            | (ord(data[5]) << 16)
-            | (ord(data[4]) << 24)
-        )
+        cl = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
+        cr = data[7] | (data[6] << 8) | (data[5] << 16) | (data[4] << 24)
 
         xl, xr = self.cipher(cl, cr, self.DECRYPT)
-        chars = ''.join(
+        chars = bytes(
             [
-                chr((xl >> 24) & 0xFF),
-                chr((xl >> 16) & 0xFF),
-                chr((xl >> 8) & 0xFF),
-                chr(xl & 0xFF),
-                chr((xr >> 24) & 0xFF),
-                chr((xr >> 16) & 0xFF),
-                chr((xr >> 8) & 0xFF),
-                chr(xr & 0xFF),
+                (xl >> 24) & 0xFF,
+                (xl >> 16) & 0xFF,
+                (xl >> 8) & 0xFF,
+                xl & 0xFF,
+                (xr >> 24) & 0xFF,
+                (xr >> 16) & 0xFF,
+                (xr >> 8) & 0xFF,
+                xr & 0xFF,
             ]
         )
         return chars
@@ -1380,7 +1359,7 @@ class Blowfish:
 
     def _nextCTRByte(self):
         """Returns one byte of CTR keystream"""
-        b = ord(self.ctr_cks[self.ctr_pos])
+        b = self.ctr_cks[self.ctr_pos]
         self.ctr_pos += 1
         if self.ctr_pos >= len(self.ctr_cks):
             self._calcCTRBUF()
@@ -1392,12 +1371,7 @@ class Blowfish:
         (belonging to the same logical stream of buffers) can be encrypted
         with this method one after the other without any intermediate work.
         """
-        if not isinstance(data, types.StringType):
-            raise RuntimeError("Can only work on 8-bit strings")
-        result = []
-        for ch in data:
-            result.append(chr(ord(ch) ^ self._nextCTRByte()))
-        return "".join(result)
+        return bytes(ch ^ self._nextCTRByte() for ch in data)
 
     def decryptCTR(self, data):
         return self.encryptCTR(data)
