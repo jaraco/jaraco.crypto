@@ -3,6 +3,8 @@ import os
 import platform
 import subprocess
 import glob
+import contextlib
+import itertools
 
 
 def _run_cmd(cmd):
@@ -19,23 +21,25 @@ def find_lib_Linux(lib_name):
 
 
 def find_library(lib_name):
-    func = globals().get(f'find_lib_{platform.system()}', find_lib_default)
+    """
+    Given a name like libcrypto, find the best match and load it.
+    """
+    func = globals()[f'find_lib_{platform.system()}']
     found = func(lib_name)
     return found and ctypes.cdll.LoadLibrary(found)
 
 
-def find_lib_default(lib_name):
-    """
-    Given a name like libcrypto, find the best match.
-    """
-    # todo, allow the target environment to customize this behavior
-    roots = [
+def _brew_paths():
+    with contextlib.suppress(subprocess.CalledProcessError):
+        yield _run_cmd('brew --prefix openssl').strip() + '/lib'
+
+
+def find_lib_Darwin(lib_name):
+    heuristic_paths = [
         '/usr/local/opt/openssl/lib/',
-        '/opt/homebrew/lib/',
     ]
-    ext = '.dylib' if platform.system() == 'Darwin' else '.so'
-    filename = lib_name + ext
-    return next(_find_file(filename, roots), None)
+    search_paths = itertools.chain(_brew_paths(), heuristic_paths)
+    return _search(lib_name, search_paths, '.dylib')
 
 
 def find_lib_Windows(lib_name):
@@ -61,8 +65,3 @@ def _search(lib_name, paths, ext):
     )
 
     return next(names, None)
-
-
-def _find_file(filename, roots):
-    candidates = (os.path.join(root, filename) for root in roots)
-    return filter(os.path.exists, candidates)
