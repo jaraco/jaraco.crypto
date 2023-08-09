@@ -48,13 +48,17 @@ def find_lib_Windows(lib_name):
         'C:\\Program Files\\OpenSSL-Win64-ARM',
     ]
     search_paths = os.environ['PATH'].split(os.pathsep) + heuristic_paths
-    names = [
-        name
-        for path in search_paths
-        for name in glob.glob(path + os.sep + f'{lib_name}*.dll')
-    ]
+    return _search(lib_name, search_paths, '.dll')
 
-    return next(iter(names), None)
+
+def _search(lib_name, paths, ext):
+    names = (
+        name
+        for path in paths
+        for name in glob.glob(path + os.sep + f'{lib_name}*{ext}')
+    )
+
+    return next(names, None)
 
 
 def _find_file(filename, roots):
