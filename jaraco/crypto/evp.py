@@ -67,7 +67,7 @@ list(
     map(
         _reg,
         'get_digestbyname DigestInit DigestInit_ex '
-        'DigestUpdate DigestFinal_ex'.split(),
+        'DigestUpdate DigestFinal_ex CIPHER_CTX_set_padding'.split(),
     )
 )
 
