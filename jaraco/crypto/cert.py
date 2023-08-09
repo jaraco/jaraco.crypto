@@ -43,14 +43,14 @@ class BIO(ctypes.Structure):
 FILETYPE_PEM = 1
 FILETYPE_ASN1 = 2
 
-lib = find_library('libeay32') or find_library('libssl')
+lib = find_library('libcrypto') or find_library('libssl')
 assert lib, "Couldn't find OpenSSL"
 
 lib.BN_bn2hex.restype = ctypes.c_char_p
 
 
 class X509(ctypes.Structure):
-    _fields_ = []
+    _fields_ = []  # type: ignore
 
     def get_serial_number(self):
         asn1_i = lib.X509_get_serialNumber(ctypes.byref(self))
