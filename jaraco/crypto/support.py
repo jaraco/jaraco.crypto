@@ -24,7 +24,7 @@ def find_library(lib_name):
 
 def find_lib_default(lib_name):
     """
-    Given a name like libeay32, find the best match.
+    Given a name like libcrypto, find the best match.
     """
     # todo, allow the target environment to customize this behavior
     roots = [

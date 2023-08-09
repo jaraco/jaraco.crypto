@@ -43,7 +43,7 @@ class BIO(ctypes.Structure):
 FILETYPE_PEM = 1
 FILETYPE_ASN1 = 2
 
-lib = find_library('libeay32') or find_library('libssl')
+lib = find_library('libcrypto') or find_library('libssl')
 assert lib, "Couldn't find OpenSSL"
 
 lib.BN_bn2hex.restype = ctypes.c_char_p
