@@ -1,14 +1,11 @@
 import platform
 
 
+non_windows = platform.system() != 'Windows'
+
+
 collect_ignore = [
     'certutil.py',
-]
-
-
-if platform.system() != 'Windows':
-    collect_ignore.extend(
-        [
-            'jaraco/crypto/cert.py',
-        ]
-    )
+] + [
+    'jaraco/crypto/cert.py',
+] * non_windows
