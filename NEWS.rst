@@ -1,3 +1,12 @@
+v3.1.1
+======
+
+Bugfixes
+--------
+
+- Restored Windows support. (#4)
+
+
 v3.1.0
 ======
 
