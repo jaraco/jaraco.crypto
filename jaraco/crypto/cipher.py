@@ -36,9 +36,6 @@ class CipherType(ctypes.Structure):
         return res.contents
 
 
-evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)  # type: ignore
-
-
 class Cipher(ctypes.Structure):
     _fields_ = evp._cipher_context_fields
     finalized = False
@@ -108,6 +105,10 @@ class Cipher(ctypes.Structure):
         self.out_data.append(out.raw[: out_len.value])
         self.finalize = lambda: ''.join(self.out_data)
         return b''.join(self.out_data)
+
+
+evp.get_cipherbyname.argtypes = (ctypes.c_char_p,)  # type: ignore
+evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)  # type: ignore
 
 
 _init_args = (
