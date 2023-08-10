@@ -1,3 +1,12 @@
+v3.2.1
+======
+
+Bugfixes
+--------
+
+- Fixed Cipher encryption behavior on macOS ARM. (#5)
+
+
 v3.2.0
 ======
 

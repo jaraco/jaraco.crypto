@@ -1,1 +1,0 @@
-Fixed Cipher encryption behavior on macOS ARM.
