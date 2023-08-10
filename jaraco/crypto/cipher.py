@@ -132,7 +132,8 @@ _final_args = (
 )
 evp.EncryptInit_ex.argtypes = (  # type: ignore
     evp.DecryptInit_ex.argtypes  # type: ignore
-) = evp.CipherInit_ex.argtypes = _init_args  # type: ignore
+) = _init_args
+evp.CipherInit_ex.argtypes = _init_args + (ctypes.c_int,)  # type: ignore
 evp.EncryptUpdate.argtypes = (  # type: ignore
     evp.DecryptUpdate.argtypes  # type: ignore
 ) = evp.CipherUpdate.argtypes = _update_args  # type: ignore
