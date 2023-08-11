@@ -236,10 +236,7 @@ class Blowfish:
         return xl, xr
 
     def __round_func(self, xl):
-        a = (xl & 0xFF000000) >> 24
-        b = (xl & 0x00FF0000) >> 16
-        c = (xl & 0x0000FF00) >> 8
-        d = xl & 0x000000FF
+        a, b, c, d = struct.pack('!L', xl)
 
         # Perform all ops as longs then and out the last 32-bits to
         # obtain the integer
@@ -257,23 +254,9 @@ class Blowfish:
             )
 
         # Use big endianess since that's what everyone else uses
-        xl = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
-        xr = data[7] | (data[6] << 8) | (data[5] << 16) | (data[4] << 24)
-
+        xl, xr = struct.unpack('>LL', data)
         cl, cr = self.cipher(xl, xr, self.ENCRYPT)
-        chars = bytes(
-            [
-                (cl >> 24) & 0xFF,
-                (cl >> 16) & 0xFF,
-                (cl >> 8) & 0xFF,
-                cl & 0xFF,
-                (cr >> 24) & 0xFF,
-                (cr >> 16) & 0xFF,
-                (cr >> 8) & 0xFF,
-                cr & 0xFF,
-            ]
-        )
-        return chars
+        return struct.pack('!LL', cl, cr)
 
     def decrypt(self, data):
         if not len(data) == 8:
@@ -282,23 +265,9 @@ class Blowfish:
             )
 
         # Use big endianess since that's what everyone else uses
-        cl = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
-        cr = data[7] | (data[6] << 8) | (data[5] << 16) | (data[4] << 24)
-
+        cl, cr = struct.unpack('>LL', data)
         xl, xr = self.cipher(cl, cr, self.DECRYPT)
-        chars = bytes(
-            [
-                (xl >> 24) & 0xFF,
-                (xl >> 16) & 0xFF,
-                (xl >> 8) & 0xFF,
-                xl & 0xFF,
-                (xr >> 24) & 0xFF,
-                (xr >> 16) & 0xFF,
-                (xr >> 8) & 0xFF,
-                xr & 0xFF,
-            ]
-        )
-        return chars
+        return struct.pack('!LL', xl, xr)
 
     def initCTR(self, iv=0):
         """Initializes CTR mode of the cypher"""
