@@ -1,28 +1,3 @@
-#
-# blowfish.py
-# Copyright (C) 2002 Michael Gilfix <mgilfix@eecs.tufts.edu>
-#
-# This module is open source; you can redistribute it and/or
-# modify it under the terms of the GPL or Artistic License.
-# These licenses are available at http://www.opensource.org
-#
-# This software must be used and distributed in accordance
-# with the law. The author claims no liability for its
-# misuse.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#
-
-# This software was modified by Ivan Voras: CTR cipher mode of
-# operation was added, together with testing and example code.
-# These changes are (c) 2007./08. Ivan Voras <ivoras@gmail.com>
-# These changes can be used, modified ad distributed under the
-# GPL or Artistic License, the same as the original module.
-# All disclaimers of warranty from the original module also
-# apply to these changes.
-
 """
 Blowfish Encryption
 
@@ -34,15 +9,13 @@ The key is a string of length anywhere between 64 and 448 bits, or
 equivalently 8 and 56 bytes. The encryption and decryption functions operate
 on 64-bit blocks, or 8 byte strings.
 
-Send questions, comments, bugs my way:
-    Michael Gilfix <mgilfix@eecs.tufts.edu>
-
 The module has been expanded to include CTR stream encryption/decryption
-mode, built from the primitives from the orignal module. This change
-did not alter any of the base Blowfish code from the original author.
+mode, built from the primitives from the orignal module.
 
-The author of CTR changes is:
-    Ivan Voras <ivoras@gmail.com>
+Acknowledgements:
+
+- Original implementation by Michael Gilfix <mgilfix@eecs.tufts.edu>.
+- CTR stream implementation by Ivan Voras <ivoras@gmail.com>.
 
 Test usage:
 
@@ -97,9 +70,6 @@ import itertools
 
 from importlib_resources import files
 from more_itertools import chunked, flatten
-
-
-__author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
 
 
 def unpack_32(val):
