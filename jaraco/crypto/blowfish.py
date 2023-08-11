@@ -100,9 +100,6 @@ from more_itertools import chunked, flatten
 __author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
 
 
-long = (int,)[0]
-
-
 class Blowfish:
 
     """Blowfish encryption Scheme
@@ -165,7 +162,7 @@ class Blowfish:
     DECRYPT = 1
 
     # For the __round_func
-    modulus = long(2) ** 32
+    modulus = 2**32
 
     def __init__(self, key):
         if not key or len(key) < 8 or len(key) > 56:
@@ -246,9 +243,9 @@ class Blowfish:
 
         # Perform all ops as longs then and out the last 32-bits to
         # obtain the integer
-        f = (long(self.s_boxes[0][a]) + long(self.s_boxes[1][b])) % self.modulus
-        f = f ^ long(self.s_boxes[2][c])
-        f = f + long(self.s_boxes[3][d])
+        f = (self.s_boxes[0][a] + self.s_boxes[1][b]) % self.modulus
+        f = f ^ self.s_boxes[2][c]
+        f = f + self.s_boxes[3][d]
         f = (f % self.modulus) & 0xFFFFFFFF
 
         return f
