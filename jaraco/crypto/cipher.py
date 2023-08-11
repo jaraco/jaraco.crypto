@@ -111,29 +111,32 @@ evp.get_cipherbyname.argtypes = (ctypes.c_char_p,)  # type: ignore
 evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)  # type: ignore
 
 
+# https://www.openssl.org/docs/man3.1/man3/EVP_CipherInit_ex.html
+
 _init_args = (
-    ctypes.POINTER(Cipher),
-    ctypes.POINTER(CipherType),
-    ctypes.c_void_p,
-    ctypes.c_char_p,
-    ctypes.c_char_p,
+    ctypes.POINTER(Cipher),  # ctx
+    ctypes.POINTER(CipherType),  # type
+    ctypes.c_void_p,  # impl
+    ctypes.c_char_p,  # key
+    ctypes.c_char_p,  # iv
+    ctypes.c_int,  # enc
 )
 _update_args = (
-    ctypes.POINTER(Cipher),
-    ctypes.c_char_p,
-    ctypes.POINTER(ctypes.c_int),
-    ctypes.c_char_p,
-    ctypes.c_int,
+    ctypes.POINTER(Cipher),  # ctx
+    ctypes.c_char_p,  # out
+    ctypes.POINTER(ctypes.c_int),  # outl
+    ctypes.c_char_p,  # in
+    ctypes.c_int,  # inl
 )
 _final_args = (
-    ctypes.POINTER(Cipher),
-    ctypes.c_char_p,
-    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(Cipher),  # ctx
+    ctypes.c_char_p,  # out[m]
+    ctypes.POINTER(ctypes.c_int),  # outl
 )
 evp.EncryptInit_ex.argtypes = (  # type: ignore
     evp.DecryptInit_ex.argtypes  # type: ignore
-) = _init_args
-evp.CipherInit_ex.argtypes = _init_args + (ctypes.c_int,)  # type: ignore
+) = (_init_args[:2] + _init_args[3:5])
+evp.CipherInit_ex.argtypes = _init_args  # type: ignore
 evp.EncryptUpdate.argtypes = (  # type: ignore
     evp.DecryptUpdate.argtypes  # type: ignore
 ) = evp.CipherUpdate.argtypes = _update_args  # type: ignore
