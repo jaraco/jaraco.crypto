@@ -11,11 +11,6 @@ Welcome to |project| documentation!
    history
 
 
-.. automodule:: jaraco.crypto.blowfish
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 .. automodule:: jaraco.crypto.cert
     :members:
     :undoc-members:
