@@ -106,8 +106,8 @@ def unpack_32(val):
     """
     Given 4 bytes, return the int.
 
-    >>> unpack_32([1, 2, 3, 4])
-    16909060
+    >>> hex(unpack_32([1, 2, 3, 4]))
+    '0x1020304'
     """
     return struct.unpack('!L', bytes(val))[0]
 
