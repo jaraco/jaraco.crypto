@@ -56,11 +56,11 @@ test encryption
 
 Plain text is (xl, xr)
 
->>> cl, cr = cipher.cipher(xl, xr, cipher.ENCRYPT)
+>>> cl, cr = cipher.encrypt_block(xl, xr)
 
 Cipher text is (cl, cr)
 
->>> dl, dr = cipher.cipher(cl, cr, cipher.DECRYPT)
+>>> dl, dr = cipher.decrypt_block(cl, cr)
 
 >>> (dl, dr) == (xl, xr)
 True
@@ -204,35 +204,40 @@ class Blowfish:
 
         # Begin chain replacing the p-boxes
         for i in range(0, len(self.p_boxes), 2):
-            left, right = self.cipher(left, right, self.ENCRYPT)
+            left, right = self.encrypt_block(left, right)
             self.p_boxes[i] = left
             self.p_boxes[i + 1] = right
 
         # Chain replace the s-boxes
         for i in range(len(self.s_boxes)):
             for j in range(0, len(self.s_boxes[i]), 2):
-                left, right = self.cipher(left, right, self.ENCRYPT)
+                left, right = self.encrypt_block(left, right)
                 self.s_boxes[i][j] = left
                 self.s_boxes[i][j + 1] = right
 
     def cipher(self, xl, xr, direction):
         """Encryption primitive"""
-        if direction == self.ENCRYPT:
-            for i in range(16):
-                xl = xl ^ self.p_boxes[i]
-                xr = self.__round_func(xl) ^ xr
-                xl, xr = xr, xl
+        op = self.encrypt_block if direction == self.ENCRYPT else self.decrypt_block
+        return op(xl, xr)
+
+    def encrypt_block(self, xl, xr):
+        for i in range(16):
+            xl = xl ^ self.p_boxes[i]
+            xr = self.__round_func(xl) ^ xr
             xl, xr = xr, xl
-            xr = xr ^ self.p_boxes[16]
-            xl = xl ^ self.p_boxes[17]
-        else:
-            for i in range(17, 1, -1):
-                xl = xl ^ self.p_boxes[i]
-                xr = self.__round_func(xl) ^ xr
-                xl, xr = xr, xl
+        xl, xr = xr, xl
+        xr = xr ^ self.p_boxes[16]
+        xl = xl ^ self.p_boxes[17]
+        return xl, xr
+
+    def decrypt_block(self, xl, xr):
+        for i in range(17, 1, -1):
+            xl = xl ^ self.p_boxes[i]
+            xr = self.__round_func(xl) ^ xr
             xl, xr = xr, xl
-            xr = xr ^ self.p_boxes[1]
-            xl = xl ^ self.p_boxes[0]
+        xl, xr = xr, xl
+        xr = xr ^ self.p_boxes[1]
+        xl = xl ^ self.p_boxes[0]
         return xl, xr
 
     def __round_func(self, xl):
@@ -255,7 +260,7 @@ class Blowfish:
 
         # Use big endianess since that's what everyone else uses
         xl, xr = struct.unpack('>LL', data)
-        cl, cr = self.cipher(xl, xr, self.ENCRYPT)
+        cl, cr = self.encrypt_block(xl, xr)
         return struct.pack('!LL', cl, cr)
 
     def decrypt(self, data):
@@ -266,7 +271,7 @@ class Blowfish:
 
         # Use big endianess since that's what everyone else uses
         cl, cr = struct.unpack('>LL', data)
-        xl, xr = self.cipher(cl, cr, self.DECRYPT)
+        xl, xr = self.decrypt_block(cl, cr)
         return struct.pack('!LL', xl, xr)
 
     def initCTR(self, iv=0):
