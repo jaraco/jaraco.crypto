@@ -92,12 +92,24 @@ False
 """
 
 import struct
+import operator
+import itertools
 
 from importlib_resources import files
 from more_itertools import chunked, flatten
 
 
 __author__ = "Michael Gilfix <mgilfix@eecs.tufts.edu>"
+
+
+def unpack_32(val):
+    """
+    Given 4 bytes, return the int.
+
+    >>> unpack_32([1, 2, 3, 4])
+    16909060
+    """
+    return struct.unpack('!L', bytes(val))[0]
 
 
 class Blowfish:
@@ -185,18 +197,9 @@ class Blowfish:
         return list(chunked(vals, 256))
 
     def compute_boxes(self, key):
-        # Cycle through the p-boxes and round-robin XOR the
-        # key with the p-boxes
-        key_len = len(key)
-        for i in range(len(self.p_boxes)):
-            index = i * 4
-            val = (
-                (ord(key[index % key_len]) << 24)
-                + (ord(key[(index + 1) % key_len]) << 16)
-                + (ord(key[(index + 2) % key_len]) << 8)
-                + ord(key[(index + 3) % key_len])
-            )
-            self.p_boxes[i] = self.p_boxes[i] ^ val
+        # Cycle through the key and round-robin XOR with the p-boxes
+        key_boxes = map(unpack_32, chunked(itertools.cycle(key.encode()), 4))
+        self.p_boxes[:] = map(operator.xor, self.p_boxes, key_boxes)
 
         # For the chaining process
         left, right = 0, 0
