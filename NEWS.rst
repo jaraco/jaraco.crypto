@@ -1,3 +1,12 @@
+v3.3.0
+======
+
+Features
+--------
+
+- Reworked much of the blowfish implementation.
+
+
 v3.2.1
 ======
 
