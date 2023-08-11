@@ -188,8 +188,8 @@ class Blowfish:
         # Cycle through the p-boxes and round-robin XOR the
         # key with the p-boxes
         key_len = len(key)
-        index = 0
         for i in range(len(self.p_boxes)):
+            index = i * 4
             val = (
                 (ord(key[index % key_len]) << 24)
                 + (ord(key[(index + 1) % key_len]) << 16)
@@ -197,7 +197,6 @@ class Blowfish:
                 + ord(key[(index + 3) % key_len])
             )
             self.p_boxes[i] = self.p_boxes[i] ^ val
-            index = index + 4
 
         # For the chaining process
         left, right = 0, 0
