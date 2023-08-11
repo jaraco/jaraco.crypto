@@ -1,1 +1,0 @@
-Removed itsdangerous compatibilty module. Use itsdangerous 2 instead.

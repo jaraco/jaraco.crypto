@@ -1,3 +1,13 @@
+v4.0.0
+======
+
+Deprecations and Removals
+-------------------------
+
+- Removed blowfish. Use pypi/blowfish instead.
+- Removed itsdangerous compatibilty module. Use itsdangerous 2 instead.
+
+
 v3.3.0
 ======
 
