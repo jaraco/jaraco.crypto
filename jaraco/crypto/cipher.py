@@ -1,6 +1,5 @@
 import ctypes
 
-
 from . import evp
 
 CIPHER_ALGORITHMS = ("DES", "DES-EDE3", "BF", "AES-128", "AES-192", "AES-256")

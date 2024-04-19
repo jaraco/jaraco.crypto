@@ -1,6 +1,5 @@
 import platform
 
-
 non_windows = platform.system() != "Windows"
 
 

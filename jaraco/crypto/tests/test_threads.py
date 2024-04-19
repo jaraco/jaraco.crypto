@@ -1,7 +1,6 @@
 from threading import Thread
 
-from . import test_cipher
-from . import test_digest
+from . import test_cipher, test_digest
 
 
 class ThreadedTester(Thread):

@@ -1,17 +1,16 @@
-import itertools
 import ctypes
+import itertools
 from ctypes import (
+    POINTER,
+    c_char,
+    c_char_p,
     c_int,
+    c_uint,
     c_ulong,
     c_void_p,
-    c_char_p,
-    POINTER,
-    c_uint,
-    c_char,
 )
 
 from .support import find_library
-
 
 get_digestbyname = None
 DigestInit = None

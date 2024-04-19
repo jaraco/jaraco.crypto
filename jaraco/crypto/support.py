@@ -1,10 +1,10 @@
+import contextlib
 import ctypes
+import glob
+import itertools
 import os
 import platform
 import subprocess
-import glob
-import contextlib
-import itertools
 
 
 def _run_cmd(cmd):
