@@ -17,7 +17,7 @@ def test_pseudo_bytes():
 
 def test_seed():
     pytest.skip("This fails, why?")
-    seed = 'bunch of bytes' * 1000
+    seed = "bunch of bytes" * 1000
     rand.cleanup()
     rand.seed(seed)
     bytes1 = rand.pseudo_bytes(100)

@@ -10,7 +10,7 @@ class ThreadedTester(Thread):
     def run(self):
         try:
             test_digest.test_digest()
-            test_cipher.test_cipher(['a' * 1000, 'd' * 1000])
+            test_cipher.test_cipher(["a" * 1000, "d" * 1000])
             # test_evp.test_rand()
         except Exception as e:
             self.failed = True
@@ -25,5 +25,5 @@ def test_threaded_crypto():
     assert all(not t.failed for t in threads), "Some threads failed"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_threaded_crypto()

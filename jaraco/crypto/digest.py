@@ -13,7 +13,7 @@ class DigestType(ctypes.Structure):
 
     @classmethod
     def from_name(cls, digest_name):
-        res = evp.get_digestbyname(digest_name.encode('ascii'))
+        res = evp.get_digestbyname(digest_name.encode("ascii"))
         if not res:
             raise DigestError("Unknown Digest: %(digest_name)s" % vars())
         return res.contents

@@ -6,21 +6,21 @@ from jaraco.crypto import digest
 
 
 def test_load_valid_digest_type_by_name():
-    digest.DigestType.from_name('SHA256')
+    digest.DigestType.from_name("SHA256")
 
 
 def test_load_invalid_digest_type_by_name():
     # dne is Does Not Exist
-    pytest.raises(digest.DigestError, digest.DigestType.from_name, 'sha-dne')
+    pytest.raises(digest.DigestError, digest.DigestType.from_name, "sha-dne")
 
 
 def test_digest():
-    digest_type = digest.DigestType.from_name('SHA512')
+    digest_type = digest.DigestType.from_name("SHA512")
     sha512 = digest.Digest(digest_type)
     sha512.update("test")
     assert not sha512.finalized
     digest_ = sha512.digest()
-    digest_str = binascii.hexlify(digest_).decode('ascii')
+    digest_str = binascii.hexlify(digest_).decode("ascii")
     assert len(digest_) == 64
     assert digest_str == (
         "ee26b0dd4af7e749aa1a8ee3c10ae992"

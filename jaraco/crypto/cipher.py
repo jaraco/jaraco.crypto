@@ -23,13 +23,13 @@ class CipherType(ctypes.Structure):
         a dash-separated string of algorithm-mode.
         If two are supplied, they should be the algorithm and mode.
         """
-        cipher_name = '-'.join(cipher_name)
-        algorithm, mode = cipher_name.rsplit('-', 1)
+        cipher_name = "-".join(cipher_name)
+        algorithm, mode = cipher_name.rsplit("-", 1)
         assert algorithm in CIPHER_ALGORITHMS, (
             "Unknown algorithm %(algorithm)s" % vars()
         )
         assert mode in CIPHER_MODES, "Unknown mode %(mode)s" % vars()
-        res = evp.get_cipherbyname(cipher_name.encode('ascii'))
+        res = evp.get_cipherbyname(cipher_name.encode("ascii"))
         if not res:
             raise CipherError("Unknown cipher: %(cipher_name)s" % vars())
         res.contents.algorithm, res.contents.mode = algorithm, mode
@@ -47,8 +47,8 @@ class Cipher(ctypes.Structure):
         evp.lib.EVP_CIPHER_CTX_free(self)
 
     def __init__(self, type, key, iv, encrypt=True):
-        key = key.encode('ascii')
-        iv = iv.encode('ascii')
+        key = key.encode("ascii")
+        iv = iv.encode("ascii")
         engine = None
         type = self.interpret_type(type)
         res = evp.CipherInit_ex(self, type, engine, key, iv, encrypt)
@@ -59,7 +59,7 @@ class Cipher(ctypes.Structure):
     @staticmethod
     def interpret_type(type):
         if not isinstance(type, CipherType):
-            if not hasattr(type, '__iter__'):
+            if not hasattr(type, "__iter__"):
                 type = [type]
             type = CipherType.from_name(*type)
         return type
@@ -103,8 +103,8 @@ class Cipher(ctypes.Structure):
         if res != 1:
             raise CipherError(f"Error finalizing cipher: {evp.get_error()}")
         self.out_data.append(out.raw[: out_len.value])
-        self.finalize = lambda: ''.join(self.out_data)
-        return b''.join(self.out_data)
+        self.finalize = lambda: "".join(self.out_data)
+        return b"".join(self.out_data)
 
 
 evp.get_cipherbyname.argtypes = (ctypes.c_char_p,)  # type: ignore
@@ -135,7 +135,7 @@ _final_args = (
 )
 evp.EncryptInit_ex.argtypes = (  # type: ignore
     evp.DecryptInit_ex.argtypes  # type: ignore
-) = (_init_args[:2] + _init_args[3:5])
+) = _init_args[:2] + _init_args[3:5]
 evp.CipherInit_ex.argtypes = _init_args  # type: ignore
 evp.EncryptUpdate.argtypes = (  # type: ignore
     evp.DecryptUpdate.argtypes  # type: ignore
