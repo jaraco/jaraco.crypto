@@ -26,13 +26,12 @@ Homepage = "https://github.com/jaraco/jaraco.crypto"
 [project.optional-dependencies]
 testing = [
 	# upstream
-	"pytest >= 6",
+	"pytest >= 6, != 8.1.*",
 	"pytest-checkdocs >= 2.4",
-	'pytest-black >= 0.3.7; python_implementation != "PyPy"', # workaround for jaraco/skeleton#22
 	"pytest-cov",
-	'pytest-mypy >= 0.9.1; python_implementation != "PyPy"', # workaround for jaraco/skeleton#22
+	"pytest-mypy",
 	"pytest-enabler >= 2.2",
-	"pytest-ruff",
+	"pytest-ruff >= 0.2.1",
 
 	# local
 ]
@@ -55,8 +54,5 @@ exclude = [
 	"tests*",
 ]
 namespaces = true
-
-[tool.black]
-skip-string-normalization = true
 
 [tool.setuptools_scm]
