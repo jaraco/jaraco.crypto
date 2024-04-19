@@ -24,13 +24,11 @@ class CipherType(ctypes.Structure):
         """
         cipher_name = "-".join(cipher_name)
         algorithm, mode = cipher_name.rsplit("-", 1)
-        assert algorithm in CIPHER_ALGORITHMS, (
-            "Unknown algorithm %(algorithm)s" % vars()
-        )
-        assert mode in CIPHER_MODES, "Unknown mode %(mode)s" % vars()
+        assert algorithm in CIPHER_ALGORITHMS, f"Unknown algorithm {algorithm}"
+        assert mode in CIPHER_MODES, f"Unknown mode {mode}"
         res = evp.get_cipherbyname(cipher_name.encode("ascii"))
         if not res:
-            raise CipherError("Unknown cipher: %(cipher_name)s" % vars())
+            raise CipherError(f"Unknown cipher: {cipher_name}")
         res.contents.algorithm, res.contents.mode = algorithm, mode
         return res.contents
 
