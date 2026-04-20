@@ -104,8 +104,8 @@ class Cipher(ctypes.Structure):
         return b"".join(self.out_data)
 
 
-evp.get_cipherbyname.argtypes = (ctypes.c_char_p,)  # type: ignore
-evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)  # type: ignore
+evp.get_cipherbyname.argtypes = (ctypes.c_char_p,)
+evp.get_cipherbyname.restype = ctypes.POINTER(CipherType)
 
 
 # https://www.openssl.org/docs/man3.1/man3/EVP_CipherInit_ex.html
@@ -130,16 +130,16 @@ _final_args = (
     ctypes.c_char_p,  # out[m]
     ctypes.POINTER(ctypes.c_int),  # outl
 )
-evp.EncryptInit_ex.argtypes = (  # type: ignore
-    evp.DecryptInit_ex.argtypes  # type: ignore
-) = _init_args[:2] + _init_args[3:5]
-evp.CipherInit_ex.argtypes = _init_args  # type: ignore
-evp.EncryptUpdate.argtypes = (  # type: ignore
-    evp.DecryptUpdate.argtypes  # type: ignore
-) = evp.CipherUpdate.argtypes = _update_args  # type: ignore
-evp.EncryptFinal_ex.argtypes = (  # type: ignore
-    evp.DecryptFinal_ex.argtypes  # type: ignore
-) = evp.CipherFinal_ex.argtypes = _final_args  # type: ignore
+evp.EncryptInit_ex.argtypes = evp.DecryptInit_ex.argtypes = (
+    _init_args[:2] + _init_args[3:5]
+)
+evp.CipherInit_ex.argtypes = _init_args
+evp.EncryptUpdate.argtypes = evp.DecryptUpdate.argtypes = evp.CipherUpdate.argtypes = (
+    _update_args
+)
+evp.EncryptFinal_ex.argtypes = evp.DecryptFinal_ex.argtypes = (
+    evp.CipherFinal_ex.argtypes
+) = _final_args
 
 evp.lib.EVP_CIPHER_CTX_new.argtypes = None
 evp.lib.EVP_CIPHER_CTX_new.restype = ctypes.POINTER(Cipher)

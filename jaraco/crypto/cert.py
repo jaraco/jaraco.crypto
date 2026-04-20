@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import ctypes
+from typing import ClassVar
 
 from .support import find_library
 
@@ -50,7 +53,7 @@ lib.BN_bn2hex.restype = ctypes.c_char_p
 
 
 class X509(ctypes.Structure):
-    _fields_ = []  # type: ignore
+    _fields_: ClassVar[list[tuple[str, type[ctypes._CData]]]] = []
 
     def get_serial_number(self):
         asn1_i = lib.X509_get_serialNumber(ctypes.byref(self))
