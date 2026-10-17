@@ -3,6 +3,10 @@ import ctypes
 from .support import find_library
 
 
+class CertError(Exception):
+    pass
+
+
 class Stack(ctypes.Structure):
     _fields_ = [
         ("num", ctypes.c_int),
@@ -74,7 +78,7 @@ def load_certificate(type, data):
     finally:
         lib.BIO_free(bio)
     if not cert:
-        raise Exception("Exception loading cert")
+        raise CertError("Exception loading cert")
     return ctypes.cast(cert, ctypes.POINTER(X509)).contents
 
 

@@ -65,7 +65,7 @@ assert lib, "Couldn't find OpenSSL"
 list(
     map(
         _reg,
-        "get_digestbyname DigestInit DigestInit_ex "
+        "get_digestbyname DigestInit DigestInit_ex "  # noqa: SIM905 readable word list
         "DigestUpdate DigestFinal_ex CIPHER_CTX_set_padding".split(),
     )
 )
@@ -147,8 +147,8 @@ for ed, method in itertools.product(
     ["Encrypt", "Decrypt", "Cipher"],
     ["Init_ex", "Update", "Final_ex"],
 ):
-    local_name = "".join([ed, method])
-    lib_name = "".join(["EVP_", ed, method])
+    local_name = f"{ed}{method}"
+    lib_name = f"EVP_{ed}{method}"
     func = getattr(lib, lib_name)
     func.restype = c_int
     globals()[local_name] = func
