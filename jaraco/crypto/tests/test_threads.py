@@ -1,27 +1,20 @@
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
 
 from . import test_cipher, test_digest
 
 
-class ThreadedTester(Thread):
-    failed = False
-
-    def run(self):
-        try:
-            test_digest.test_digest()
-            test_cipher.test_cipher(["a" * 1000, "d" * 1000])
-            # test_evp.test_rand()
-        except Exception as e:
-            self.failed = True
-            self.exception = e
+def exercise_crypto():
+    test_digest.test_digest()
+    test_cipher.test_cipher(["a" * 1000, "d" * 1000])
+    # test_evp.test_rand()
 
 
 def test_threaded_crypto():
-    threads = [ThreadedTester() for i in range(10)]
-    map(lambda t: t.start(), threads)
-    # wait for the threads to complete
-    map(lambda t: t.join(), threads)
-    assert all(not t.failed for t in threads), "Some threads failed"
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(exercise_crypto) for _ in range(10)]
+    # result() re-raises any exception from the worker thread
+    for future in futures:
+        future.result()
 
 
 if __name__ == "__main__":
